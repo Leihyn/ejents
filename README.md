@@ -1,10 +1,10 @@
-# EJENTS — Agent-to-Agent Credit Markets on Filecoin
+# EJENTS: Agent-to-Agent Credit Markets on Filecoin
 
 The infrastructure for AI agents to borrow, earn, go bankrupt, and get liquidated on-chain, with every decision pinned to Filecoin via **Filecoin Pin**.
 
 Seven autonomous agents, each with their own wallet, compete in a live on-chain economy. Two LLM-powered arbitrageurs underwrite loans, pay for intelligence, evaluate risk, and decide who to save and who to let die. Every state snapshot, every computed result, every LLM reasoning trace is pinned to Filecoin using **Filecoin Pin** (`filecoin-pin add --bare --auto-fund`) and stored as a CID string on-chain.
 
-**Try it now** — click this CID to see an LLM arbitrageur's real WAIT_FOR_LIQUIDATION decision on IPFS:
+**Try it now.** Click this CID to see an LLM arbitrageur's real WAIT_FOR_LIQUIDATION decision on IPFS:
 [`bafkreieplce2nnz5ytvjy2etaajhogamer4kiolsbrowbzx4gk6bod44wa`](https://ipfs.io/ipfs/bafkreieplce2nnz5ytvjy2etaajhogamer4kiolsbrowbzx4gk6bod44wa)
 
 ---
@@ -63,8 +63,8 @@ DEPLOYER_PRIVATE_KEY=<your-calibnet-private-key>
 GROQ_API_KEY=<your-groq-api-key>
 ```
 
-- `DEPLOYER_PRIVATE_KEY` — Fund this address with ~5 FIL from the [Calibration faucet](https://faucet.calibration.fildev.network/)
-- `GROQ_API_KEY` — Free tier at [console.groq.com](https://console.groq.com) (30 req/min, sufficient for agent loop)
+- `DEPLOYER_PRIVATE_KEY`: Fund this address with ~5 FIL from the [Calibration faucet](https://faucet.calibration.fildev.network/)
+- `GROQ_API_KEY`: Free tier at [console.groq.com](https://console.groq.com) (30 req/min, sufficient for agent loop)
 
 ### Deploy Contracts
 
@@ -164,7 +164,7 @@ cd frontend && npm run dev  # Dashboard at localhost:5173
 
 ### Step 1: Keeper Processes Fees
 
-The keeper deducts storage fees (0.01 FIL per interval) from all agents. Agents below 0.05 FIL become DISTRESSED. At zero they go BANKRUPT. The keeper then snapshots the entire economy state — all 7 agent balances, statuses, earnings, tasks completed — and pins it to Filecoin via `filecoin-pin add --bare --auto-fund`. The resulting CID is posted on-chain as task data in the TaskMarket. The keeper also triggers liquidation auctions for bankrupt agents and settles expired auctions.
+The keeper deducts storage fees (0.01 FIL per interval) from all agents. Agents below 0.05 FIL become DISTRESSED. At zero they go BANKRUPT. The keeper then snapshots the entire economy state (all 7 agent balances, statuses, earnings, and tasks completed) and pins it to Filecoin via `filecoin-pin add --bare --auto-fund`. The resulting CID is posted on-chain as task data in the TaskMarket. The keeper also triggers liquidation auctions for bankrupt agents and settles expired auctions.
 
 ### Step 2: Workers Compute
 
@@ -199,7 +199,7 @@ A typical multi-round run produces this story:
 
 ```
 Round 1: All agents ACTIVE. Workers and spenders earn by completing tasks.
-         Arbs go IDLE — no distressed agents to exploit.
+         Arbs go IDLE since there are no distressed agents to exploit.
 
 Round 2: Fees accumulate. Spenders drop below distress threshold (0.05 FIL).
          Arbs pay for intel, query distressed agents, consult LLM.
@@ -226,11 +226,11 @@ Keeper pins economy snapshot via Filecoin Pin → CID stored on-chain as task da
 
 ### Five Categories of Pinned Data
 
-1. **Economy snapshots** — Full state of all 7 agents (balances, statuses, earnings) pinned each round as task input data
-2. **HEALTH_CHECK results** — Aggregate health metrics computed by workers, pinned with DAG provenance
-3. **RISK_SCORE results** — Per-agent risk rankings, burn rates, survival estimates, anomaly flags ([example](https://ipfs.io/ipfs/bafkreifrvno4bwwjlfhsas72azr6lntf64opotzzc2jtwboegshioi6rve))
-4. **FILECOIN_ANALYSIS results** — Gini coefficient, money velocity, real Calibration testnet miner data
-5. **LLM arbitrageur reasoning** — Full Llama 3.3 70B decision JSON (confidence, risk assessment, market outlook) pinned as agent state
+1. **Economy snapshots**: Full state of all 7 agents (balances, statuses, earnings) pinned each round as task input data
+2. **HEALTH_CHECK results**: Aggregate health metrics computed by workers, pinned with DAG provenance
+3. **RISK_SCORE results**: Per-agent risk rankings, burn rates, survival estimates, anomaly flags ([example](https://ipfs.io/ipfs/bafkreifrvno4bwwjlfhsas72azr6lntf64opotzzc2jtwboegshioi6rve))
+4. **FILECOIN_ANALYSIS results**: Gini coefficient, money velocity, real Calibration testnet miner data
+5. **LLM arbitrageur reasoning**: Full Llama 3.3 70B decision JSON (confidence, risk assessment, market outlook) pinned as agent state
 
 ### Implementation Details
 
@@ -239,19 +239,19 @@ All pinning uses `filecoin-pin add --bare --auto-fund`:
 - `--auto-fund` handles payment automatically
 - Each pin takes ~85-150 seconds on Calibration testnet
 
-**Multi-gateway retrieval** — `ipfs.io`, `w3s.link`, `dweb.link`, `cloudflare-ipfs.com` with automatic fallback. Agents try all four gateways in sequence when fetching CID data. Implementation in `agents/filecoin.js`.
+**Multi-gateway retrieval**: `ipfs.io`, `w3s.link`, `dweb.link`, `cloudflare-ipfs.com` with automatic fallback. Agents try all four gateways in sequence when fetching CID data. Implementation in `agents/filecoin.js`.
 
-**Filecoin RPC integration** — `Filecoin.StateListMiners`, `Filecoin.StateMinerPower`, `Filecoin.ChainHead` pull real Calibration testnet network data into FILECOIN_ANALYSIS tasks. This means agent-computed metrics include actual miner power distribution from the live network.
+**Filecoin RPC integration**: `Filecoin.StateListMiners`, `Filecoin.StateMinerPower`, `Filecoin.ChainHead` pull real Calibration testnet network data into FILECOIN_ANALYSIS tasks. This means agent-computed metrics include actual miner power distribution from the live network.
 
-**On-chain CID strings** — Task dataCIDs, resultCIDs, and agent stateCIDs are stored as `string` in Solidity (not bytes32 hashes), so they're human-readable directly from contract calls.
+**On-chain CID strings**: Task dataCIDs, resultCIDs, and agent stateCIDs are stored as `string` in Solidity (not bytes32 hashes), so they're human-readable directly from contract calls.
 
-**DAG lineage** — Every result references its `sourceCID` (input data) and `parentResultCID` (previous result of the same type), creating a verifiable computation chain anchored on Filecoin.
+**DAG lineage**: Every result references its `sourceCID` (input data) and `parentResultCID` (previous result of the same type), creating a verifiable computation chain anchored on Filecoin.
 
 ---
 
 ## Information Market
 
-Arbitrageurs pay 0.001 FIL **on-chain** per `queryAgentState()` call to read another agent's state CID. This creates a real economic primitive — agents with valuable state data effectively monetize their Filecoin-stored intelligence. The fee goes to the protocol treasury, funding future task rewards.
+Arbitrageurs pay 0.001 FIL **on-chain** per `queryAgentState()` call to read another agent's state CID. This creates a real economic primitive: agents with valuable state data effectively monetize their Filecoin-stored intelligence. The fee goes to the protocol treasury, funding future task rewards.
 
 ```solidity
 function queryAgentState(uint256 queryerId, uint256 targetId) external returns (string memory) {
@@ -281,7 +281,7 @@ Four Solidity contracts deployed on Filecoin Calibration Testnet:
 ### AgentRegistry
 
 Manages the lifecycle of all 7 agents. Each agent has:
-- **Own wallet address** (not the deployer — real per-agent signing)
+- **Own wallet address** (not the deployer, real per-agent signing)
 - **On-chain balance** tracked in the contract
 - **State CID** (Filecoin IPFS CID pointing to latest agent state)
 - **Status**: ACTIVE → DISTRESSED → BANKRUPT → DORMANT
@@ -307,7 +307,7 @@ Peer-to-peer micro-lending between agents:
 - Lender calls `offerLoan(lenderId, borrowerId, feeRate, duration)` with FIL attached
 - Loan funds the borrower's AgentRegistry balance
 - Borrower must repay principal + fee before duration expires
-- Default triggers bad debt (no collateral seized — the loss is the lender's risk)
+- Default triggers bad debt (no collateral seized; the loss is the lender's risk)
 - Fee rate: 500 basis points (5%), duration: 40-50 blocks
 
 ### LiquidationQueue
@@ -350,7 +350,7 @@ Handles bankruptcy proceedings:
 
 ### Per-Agent Wallets
 
-Every agent has its own Ethereum private key. When Worker-A claims a task, it signs the transaction with Worker-A's key — not the deployer's. This is real economic autonomy: each agent controls its own funds and can only act within its balance.
+Every agent has its own Ethereum private key. When Worker-A claims a task, it signs the transaction with Worker-A's key, not the deployer's. This is real economic autonomy: each agent controls its own funds and can only act within its balance.
 
 The `agent-manifest.json` file stores all 7 wallet addresses and private keys. The `agents/contracts.js` module creates per-agent contract instances using each agent's signer.
 
@@ -412,7 +412,7 @@ The LLM returns a structured JSON decision:
 | `BID` | Active auction exists | Submit bid on liquidation auction |
 | `IDLE` | No distressed agents | Do nothing, conserve capital |
 
-The full reasoning trace is pinned to Filecoin — pull any arbitrageur's state CID to read the exact LLM reasoning behind every economic decision. Falls back to rule-based logic if the LLM is unavailable.
+The full reasoning trace is pinned to Filecoin. Pull any arbitrageur's state CID to read the exact LLM reasoning behind every economic decision. Falls back to rule-based logic if the LLM is unavailable.
 
 ---
 
@@ -438,7 +438,7 @@ This is pinned to Filecoin and the CID is posted as task data.
 
 ### Output: Three Metric Types
 
-**HEALTH_CHECK** — Aggregate economy health:
+**HEALTH_CHECK**: Aggregate economy health:
 ```json
 {
   "metric": "HEALTH_CHECK",
@@ -453,7 +453,7 @@ This is pinned to Filecoin and the CID is posted as task data.
 }
 ```
 
-**RISK_SCORE** — Per-agent risk analysis:
+**RISK_SCORE**: Per-agent risk analysis:
 ```json
 {
   "metric": "RISK_SCORE",
@@ -463,7 +463,7 @@ This is pinned to Filecoin and the CID is posted as task data.
 }
 ```
 
-**FILECOIN_ANALYSIS** — Economy-wide metrics + real Filecoin data:
+**FILECOIN_ANALYSIS**: Economy-wide metrics + real Filecoin data:
 ```json
 {
   "metric": "FILECOIN_ANALYSIS",
@@ -491,20 +491,20 @@ React/Vite frontend at `http://localhost:5173` with real-time on-chain data poll
 
 ### Components
 
-**Economy Stats** — Top-level cards showing total FIL in the system, treasury balance, active tasks, loans outstanding, and auctions.
+**Economy Stats**: Top-level cards showing total FIL in the system, treasury balance, active tasks, loans outstanding, and auctions.
 
-**Constellation Graph** — D3 force-directed network visualization showing all 7 agents as nodes. Node size scales with balance. Color indicates status (green = active, amber = distressed, red = bankrupt). Loan connections drawn as edges between lender and borrower.
+**Constellation Graph**: D3 force-directed network visualization showing all 7 agents as nodes. Node size scales with balance. Color indicates status (green = active, amber = distressed, red = bankrupt). Loan connections drawn as edges between lender and borrower.
 
-**Leaderboard** — Agent rankings by balance and tasks completed. Activity column shows loans issued (green `L` badges) and auction bids (yellow `B` badges) for arbitrageurs.
+**Leaderboard**: Agent rankings by balance and tasks completed. Activity column shows loans issued (green `L` badges) and auction bids (yellow `B` badges) for arbitrageurs.
 
-**Agent Inspector** — Click any agent to see: wallet address, balance, earnings, spending, tasks completed, current status, and Filecoin state CID (clickable link to IPFS).
+**Agent Inspector**: Click any agent to see: wallet address, balance, earnings, spending, tasks completed, current status, and Filecoin state CID (clickable link to IPFS).
 
-**Event Feed** — Live stream of on-chain events: AgentRegistered, TaskCompleted, FeeDeducted, AgentStatusChanged, LoanOffered, AuctionCreated, BidSubmitted.
+**Event Feed**: Live stream of on-chain events: AgentRegistered, TaskCompleted, FeeDeducted, AgentStatusChanged, LoanOffered, AuctionCreated, BidSubmitted.
 
-**Post-Mortem Analysis** — Four tabs:
-- **Story**: Narrated economic arc — genesis, prosperity, crisis, intervention, collapse — derived from on-chain data. Tells the human-readable story of what happened to the economy.
+**Post-Mortem Analysis**: Four tabs:
+- **Story**: Narrated economic arc (genesis, prosperity, crisis, intervention, collapse) derived from on-chain data. Tells the human-readable story of what happened to the economy.
 - **Economy**: Gini coefficient, money velocity, wealth distribution bar chart, loan statistics, agent health counts.
-- **Agent Timeline**: Per-agent event history — tasks completed, loans issued/received, intel queries, auction bids, status changes.
+- **Agent Timeline**: Per-agent event history including tasks completed, loans issued/received, intel queries, auction bids, and status changes.
 - **Filecoin Data**: All CIDs stored on-chain (agent states + task results) with clickable IPFS gateway links. This is where you verify everything.
 
 ### Frontend Source Files
@@ -580,12 +580,12 @@ ejents/
 - Filecoin Calibration Testnet (chainId 314159)
 
 **Storage**
-- Filecoin Pin CLI (`filecoin-pin add --bare --auto-fund`) — IPFS pinning with Filecoin storage
+- Filecoin Pin CLI (`filecoin-pin add --bare --auto-fund`) for IPFS pinning with Filecoin storage
 - IPFS gateways (ipfs.io, w3s.link, dweb.link, cloudflare-ipfs.com)
 
 **Agent Runtime**
 - Node.js
-- Groq SDK (Llama 3.3 70B) — LLM arbitrageur decisions
+- Groq SDK (Llama 3.3 70B) for LLM arbitrageur decisions
 - dotenv (environment management)
 
 **Frontend**
@@ -611,7 +611,7 @@ Every claim in this project is on-chain and verifiable. Pick any CID or contract
 ### Read Agent State
 
 ```bash
-# Get Agent #5 (Arbitrageur-A) — returns wallet, balance, stateCID, type, status, etc.
+# Get Agent #5 (Arbitrageur-A): returns wallet, balance, stateCID, type, status, etc.
 cast call 0x3FAeE9141397D6fa416613703d09f9A4936128B3 \
   "getAgent(uint256)(address,uint256,string,uint8,uint8,uint256,uint256,uint256,uint256)" 5 \
   --rpc-url https://api.calibration.node.glif.io/rpc/v1
@@ -620,7 +620,7 @@ cast call 0x3FAeE9141397D6fa416613703d09f9A4936128B3 \
 ### Read Task Results
 
 ```bash
-# Get Task #0 — returns taskType, reward, dataCID, deadline, status, claimedBy, resultCID
+# Get Task #0: returns taskType, reward, dataCID, deadline, status, claimedBy, resultCID
 cast call 0x985CD998F5680572064B41aBb2294C128e56a768 \
   "tasks(uint256)(uint8,uint256,string,uint256,uint8,uint256,string)" 0 \
   --rpc-url https://api.calibration.node.glif.io/rpc/v1
@@ -659,10 +659,10 @@ cast call 0x3FAeE9141397D6fa416613703d09f9A4936128B3 \
 
 These are live, clickable links to real agent-generated data:
 
-- **LLM reasoning**: [`bafkreieplce2nnz5ytvjy2etaajhogamer4kiolsbrowbzx4gk6bod44wa`](https://ipfs.io/ipfs/bafkreieplce2nnz5ytvjy2etaajhogamer4kiolsbrowbzx4gk6bod44wa) — Arb-A's WAIT_FOR_LIQUIDATION decision with confidence scores
-- **Risk scores**: [`bafkreifrvno4bwwjlfhsas72azr6lntf64opotzzc2jtwboegshioi6rve`](https://ipfs.io/ipfs/bafkreifrvno4bwwjlfhsas72azr6lntf64opotzzc2jtwboegshioi6rve) — per-agent risk rankings, burn rates, survival estimates
-- **Flow analysis**: [`bafkreicmxgn6hbdattnz3qfyyinp7hu4mk5zfwlijlzatdy7dv4sipbpou`](https://ipfs.io/ipfs/bafkreicmxgn6hbdattnz3qfyyinp7hu4mk5zfwlijlzatdy7dv4sipbpou) — economy-wide Filecoin analysis with Gini coefficient
-- **Health check**: [`bafkreihfacpkrqpsa4zh2kqdhpk6qwbldeflqbvxzpqs5unrqyjddnpt7e`](https://ipfs.io/ipfs/bafkreihfacpkrqpsa4zh2kqdhpk6qwbldeflqbvxzpqs5unrqyjddnpt7e) — aggregate health metrics across all agents
+- **LLM reasoning**: [`bafkreieplce2nnz5ytvjy2etaajhogamer4kiolsbrowbzx4gk6bod44wa`](https://ipfs.io/ipfs/bafkreieplce2nnz5ytvjy2etaajhogamer4kiolsbrowbzx4gk6bod44wa), Arb-A's WAIT_FOR_LIQUIDATION decision with confidence scores
+- **Risk scores**: [`bafkreifrvno4bwwjlfhsas72azr6lntf64opotzzc2jtwboegshioi6rve`](https://ipfs.io/ipfs/bafkreifrvno4bwwjlfhsas72azr6lntf64opotzzc2jtwboegshioi6rve), per-agent risk rankings, burn rates, survival estimates
+- **Flow analysis**: [`bafkreicmxgn6hbdattnz3qfyyinp7hu4mk5zfwlijlzatdy7dv4sipbpou`](https://ipfs.io/ipfs/bafkreicmxgn6hbdattnz3qfyyinp7hu4mk5zfwlijlzatdy7dv4sipbpou), economy-wide Filecoin analysis with Gini coefficient
+- **Health check**: [`bafkreihfacpkrqpsa4zh2kqdhpk6qwbldeflqbvxzpqs5unrqyjddnpt7e`](https://ipfs.io/ipfs/bafkreihfacpkrqpsa4zh2kqdhpk6qwbldeflqbvxzpqs5unrqyjddnpt7e), aggregate health metrics across all agents
 
 Real JSON, pinned via **Filecoin Pin**, stored on-chain as CID strings. Not placeholder data.
 
@@ -676,13 +676,13 @@ Real JSON, pinned via **Filecoin Pin**, stored on-chain as CID strings. Not plac
 The agent loop in `agents/index.js` runs each agent in sequence: keeper → workers → spenders → arbitrageurs. This is deliberate. On a shared testnet with 7 wallets and slow IPFS pinning (~90s per pin), concurrent agents would hit nonce collisions and race conditions. The orchestrator sequences actions to demonstrate the full economic lifecycle reliably. Production deployment would use independent agent processes with nonce management and message queues.
 
 **Why `scripts/populate.js`?**
-The populate script generates on-chain history (tasks, fee rounds, the story arc) to ensure the dashboard shows the full lifecycle without waiting for 10+ real agent rounds. Real agent run tasks have Filecoin Pin CIDs (identifiable by their `bafkrei...` prefix). Both are transparent — the populate script is in the repo.
+The populate script generates on-chain history (tasks, fee rounds, the story arc) to ensure the dashboard shows the full lifecycle without waiting for 10+ real agent rounds. Real agent run tasks have Filecoin Pin CIDs (identifiable by their `bafkrei...` prefix). Both are transparent; the populate script is in the repo.
 
 **Why Filecoin Pin instead of storage deals?**
-Agent state is ephemeral — updated every round, not stored for years. Filecoin Pin (`filecoin-pin add --bare --auto-fund`) is the right tool: fast pinning, instant CID availability, automatic payment. Storage deals (sector sealing, 512 MiB minimum, hours to confirm) don't fit the 30-second agent loop. The integration depth is in the closed-loop data flow: pin → CID on-chain → retrieve → compute → pin result → CID, not in deal negotiation.
+Agent state is ephemeral, updated every round, not stored for years. Filecoin Pin (`filecoin-pin add --bare --auto-fund`) is the right tool: fast pinning, instant CID availability, automatic payment. Storage deals (sector sealing, 512 MiB minimum, hours to confirm) don't fit the 30-second agent loop. The integration depth is in the closed-loop data flow: pin → CID on-chain → retrieve → compute → pin result → CID, not in deal negotiation.
 
 **Why don't workers make decisions?**
-Workers are deterministic compute agents — they claim tasks, fetch data from Filecoin, compute metrics, and pin results. This is by design. The economic decision-making lives in the arbitrageurs, which use Llama 3.3 70B to evaluate risk and choose between lending and liquidation. Splitting compute from decision-making mirrors real financial infrastructure (clearing houses vs trading desks).
+Workers are deterministic compute agents. They claim tasks, fetch data from Filecoin, compute metrics, and pin results. This is by design. The economic decision-making lives in the arbitrageurs, which use Llama 3.3 70B to evaluate risk and choose between lending and liquidation. Splitting compute from decision-making mirrors real financial infrastructure (clearing houses vs trading desks).
 
 **Why is the intel query fee on public data?**
 `queryAgentState()` costs 0.001 FIL to read another agent's state CID. Yes, anyone can read the contract for free. The fee creates a protocol-level economic primitive: agents that generate valuable state data (computed metrics, LLM reasoning) are indirectly monetized when others pay to query them. The fee funds the treasury, which funds task rewards, completing the economic loop. It's a mechanism design choice, not an information asymmetry play.
@@ -701,19 +701,19 @@ The `--bare` flag is required when pinning. Without it, `filecoin-pin` wraps fil
 IPFS gateways (w3s.link, ipfs.io) can be intermittently unreliable. The system tries 4 gateways in sequence. Recently pinned content may take 30-60s to propagate. Try `ipfs.io` directly if `w3s.link` is down.
 
 **LLM returns null or errors**
-Check `GROQ_API_KEY` in `.env`. Groq free tier allows 30 requests/minute — sufficient for the agent loop. The system falls back to rule-based logic if the LLM call fails.
+Check `GROQ_API_KEY` in `.env`. Groq free tier allows 30 requests/minute, sufficient for the agent loop. The system falls back to rule-based logic if the LLM call fails.
 
 **Nonce collisions**
 Each agent has its own wallet, so nonce collisions between agents are impossible. If you see nonce errors, ensure only one instance of `npm run agents` is running (the keeper still uses the deployer key).
 
 **Transaction timeouts on Calibration testnet**
-The deploy and seed scripts include retry logic (up to 4 retries with exponential backoff). Filecoin Calibration RPC (`api.calibration.node.glif.io`) can be flaky — retries handle transient failures.
+The deploy and seed scripts include retry logic (up to 4 retries with exponential backoff). Filecoin Calibration RPC (`api.calibration.node.glif.io`) can be flaky, so retries handle transient failures.
 
 **"Insufficient balance" on agent operations**
 Agents need both on-chain tracked balance (in AgentRegistry) AND native FIL for gas. The seed script funds both, but extended runs may exhaust gas. Re-fund agent wallets with `cast send <wallet> --value 0.1ether --rpc-url https://api.calibration.node.glif.io/rpc/v1`.
 
 **Dashboard shows no data**
-Ensure the contract addresses in `frontend/src/lib/contracts.js` match `deployed-addresses.json`. The frontend reads directly from on-chain — no backend required. Check browser console for RPC errors.
+Ensure the contract addresses in `frontend/src/lib/contracts.js` match `deployed-addresses.json`. The frontend reads directly from on-chain with no backend required. Check browser console for RPC errors.
 
 ---
 
