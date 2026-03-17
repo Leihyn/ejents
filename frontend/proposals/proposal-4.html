@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EJENTS — Proposal 4: Warfare</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+<style>
+  /* DNA-F-H-I-N-D: Full-bleed, Hidden-nav, Immersive, Neon, Display */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #000000;
+    --surface: #0a0a0a;
+    --border: rgba(0, 255, 136, 0.08);
+    --border-hi: rgba(0, 255, 136, 0.2);
+    --neon: #00ff88;
+    --neon-dim: #00cc66;
+    --neon-glow: rgba(0, 255, 136, 0.08);
+    --red: #ff2255;
+    --red-glow: rgba(255, 34, 85, 0.08);
+    --amber: #ffcc00;
+    --amber-glow: rgba(255, 204, 0, 0.08);
+    --blue: #00aaff;
+    --text: #cccccc;
+    --text-2: #666666;
+    --text-3: #333333;
+    --display: 'Chakra Petch', sans-serif;
+    --mono: 'Share Tech Mono', monospace;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    font-size: 12px;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ---- Full-bleed layout with HUD overlay ---- */
+  .hud {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    pointer-events: none;
+  }
+
+  .hud > * { pointer-events: auto; }
+
+  /* ---- Top Bar (spanning full width) ---- */
+  .top-bar {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+
+  .logo {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--neon);
+    text-shadow: 0 0 20px var(--neon-glow), 0 0 40px rgba(0,255,136,0.05);
+  }
+
+  .top-stats {
+    display: flex;
+    gap: 24px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .top-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .top-stat .label { color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em; font-size: 9px; }
+  .top-stat .val { color: var(--neon-dim); }
+
+  .live-beacon {
+    width: 6px;
+    height: 6px;
+    background: var(--neon);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--neon), 0 0 12px rgba(0,255,136,0.3);
+    animation: beacon 2s ease-in-out infinite;
+  }
+
+  @keyframes beacon {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--neon), 0 0 12px rgba(0,255,136,0.3); }
+    50% { opacity: 0.4; box-shadow: 0 0 3px var(--neon); }
+  }
+
+  /* ---- Constellation: full background ---- */
+  .constellation-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+
+  /* Grid lines background */
+  .constellation-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.3;
+  }
+
+  /* Scanline */
+  .scanline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon), transparent);
+    opacity: 0.15;
+    animation: scan 4s linear infinite;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  @keyframes scan {
+    0% { top: 0; }
+    100% { top: 100vh; }
+  }
+
+  /* Nodes */
+  .war-node {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    z-index: 2;
+    transition: transform 150ms ease-out;
+  }
+
+  .war-node:hover { transform: scale(1.15); }
+
+  .hex {
+    width: var(--size);
+    height: var(--size);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hex::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1.5px solid var(--node-color);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: var(--node-bg, transparent);
+  }
+
+  .hex-inner {
+    width: 35%;
+    height: 35%;
+    background: var(--node-color);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    opacity: 0.6;
+    z-index: 1;
+  }
+
+  .war-node .n-name {
+    margin-top: 6px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-2);
+    letter-spacing: 0.05em;
+  }
+
+  .war-node .n-bal {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--node-color);
+    opacity: 0.7;
+  }
+
+  /* Loan connections */
+  .war-link {
+    position: fixed;
+    height: 1px;
+    transform-origin: left center;
+    z-index: 1;
+    pointer-events: none;
+    background: repeating-linear-gradient(90deg, var(--neon-dim) 0, var(--neon-dim) 3px, transparent 3px, transparent 8px);
+    opacity: 0.2;
+  }
+
+  /* ---- Left Panel (overlay) ---- */
+  .left-panel {
+    grid-column: 1;
+    grid-row: 2;
+    width: 240px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 5;
+  }
+
+  .overlay-card {
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    padding: 12px;
+  }
+
+  .overlay-card:hover {
+    border-color: var(--border-hi);
+  }
+
+  .oc-title {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--neon-dim);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .oc-title::before {
+    content: '';
+    width: 3px;
+    height: 10px;
+    background: var(--neon);
+    flex-shrink: 0;
+  }
+
+  .agent-count-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .count-bar {
+    flex: 1;
+    height: 3px;
+    background: var(--text-3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .count-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+  }
+
+  .stat-line {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 3px 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-line .k { color: var(--text-3); }
+  .stat-line .v { color: var(--text); }
+
+  /* ---- Right Panel (overlay) ---- */
+  .right-panel {
+    grid-column: 3;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 16px;
+    z-index: 5;
+  }
+
+  .inspector-card {
+    width: 260px;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    padding: 14px;
+  }
+
+  .insp-name {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+  }
+
+  .insp-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 10px;
+  }
+
+  .insp-type {
+    padding: 1px 6px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    border: 1px solid var(--border-hi);
+    color: var(--neon-dim);
+  }
+
+  .insp-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .insp-stat {
+    background: rgba(0,255,136,0.03);
+    border: 1px solid var(--border);
+    padding: 8px;
+  }
+
+  .insp-stat .is-label {
+    font-family: var(--mono);
+    font-size: 8px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .insp-stat .is-value {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- Bottom Bar (event ticker) ---- */
+  .bottom-bar {
+    grid-column: 1 / -1;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border);
+    padding: 8px 20px;
+    display: flex;
+    gap: 32px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    z-index: 10;
+  }
+
+  .ticker-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .ticker-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .ticker-block { color: var(--text-3); }
+  .ticker-text { color: var(--text-2); }
+
+  .dna-badge {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-3);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    background: rgba(0,0,0,0.9);
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="dna-badge">DNA-F-H-I-N-D</div>
+<div class="scanline"></div>
+
+<!-- Full-bleed constellation background -->
+<div class="constellation-bg"></div>
+
+<!-- Loan lines -->
+<div class="war-link" style="top:300px;left:350px;width:280px;transform:rotate(12deg);"></div>
+<div class="war-link" style="top:380px;left:600px;width:200px;transform:rotate(-18deg);"></div>
+
+<!-- Hexagonal nodes scattered across screen -->
+<div class="war-node" style="top:180px;left:300px;--node-color:var(--neon);--node-bg:var(--neon-glow);--size:50px;">
+  <div class="hex"><div class="hex-inner"></div></div>
+  <div class="n-name">WORKER-A</div>
+  <div class="n-bal">0.420</div>
+</div>
+<div class="war-node" style="top:340px;left:180px;--node-color:var(--neon);--node-bg:var(--neon-glow);--size:44px;">
+  <div class="hex"><div class="hex-inner"></div></div>
+  <div class="n-name">WORKER-B</div>
+  <div class="n-bal">0.380</div>
+</div>
+<div class="war-node" style="top:250px;left:520px;--node-color:var(--neon);--node-bg:var(--neon-glow);--size:40px;">
+  <div class="hex"><div class="hex-inner"></div></div>
+  <div class="n-name">WORKER-C</div>
+  <div class="n-bal">0.310</div>
+</div>
+<div class="war-node" style="top:140px;left:700px;--node-color:var(--amber);--node-bg:var(--amber-glow);--size:34px;">
+  <div class="hex"><div class="hex-inner"></div></div>
+  <div class="n-name">SPENDER-A</div>
+  <div class="n-bal">0.180</div>
+</div>
+<div class="war-node" style="top:420px;left:380px;--node-color:var(--amber);--node-bg:var(--amber-glow);--size:28px;">
+  <div class="hex" style="opacity:0.6;"><div class="hex-inner" style="opacity:0.3;"></div></div>
+  <div class="n-name">SPENDER-B</div>
+  <div class="n-bal">0.040</div>
+</div>
+<div class="war-node" style="top:200px;left:880px;--node-color:var(--blue);--node-bg:rgba(0,170,255,0.06);--size:56px;">
+  <div class="hex"><div class="hex-inner"></div></div>
+  <div class="n-name">ARB-A</div>
+  <div class="n-bal">0.620</div>
+</div>
+<div class="war-node" style="top:460px;left:740px;--node-color:var(--red);--node-bg:var(--red-glow);--size:30px;">
+  <div class="hex" style="opacity:0.2;"><div class="hex-inner" style="opacity:0;"></div></div>
+  <div class="n-name" style="opacity:0.3">ARB-B</div>
+  <div class="n-bal" style="opacity:0.3">DEAD</div>
+</div>
+
+<!-- HUD Overlay -->
+<div class="hud">
+  <div class="top-bar">
+    <span class="logo">EJENTS</span>
+    <div class="top-stats">
+      <div class="top-stat"><span class="live-beacon"></span><span class="val">LIVE</span></div>
+      <div class="top-stat"><span class="label">BLK</span><span class="val">#2,847,391</span></div>
+      <div class="top-stat"><span class="label">AGENTS</span><span class="val">7</span></div>
+      <div class="top-stat"><span class="label">ECONOMY</span><span class="val" style="color:var(--neon)">2.847 FIL</span></div>
+    </div>
+    <span style="font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:0.08em;">CALIBRATION TESTNET</span>
+  </div>
+
+  <div class="left-panel">
+    <div class="overlay-card">
+      <div class="oc-title">Agent Status</div>
+      <div class="agent-count-row">
+        <span style="color:var(--neon);width:20px;">4</span>
+        <span style="color:var(--text-3);width:48px;font-size:9px;">ACTIVE</span>
+        <div class="count-bar"><div class="count-bar-fill" style="width:57%;background:var(--neon);"></div></div>
+      </div>
+      <div class="agent-count-row">
+        <span style="color:var(--amber);width:20px;">2</span>
+        <span style="color:var(--text-3);width:48px;font-size:9px;">DISTR</span>
+        <div class="count-bar"><div class="count-bar-fill" style="width:29%;background:var(--amber);"></div></div>
+      </div>
+      <div class="agent-count-row">
+        <span style="color:var(--red);width:20px;">1</span>
+        <span style="color:var(--text-3);width:48px;font-size:9px;">DEAD</span>
+        <div class="count-bar"><div class="count-bar-fill" style="width:14%;background:var(--red);"></div></div>
+      </div>
+    </div>
+
+    <div class="overlay-card">
+      <div class="oc-title">Economy</div>
+      <div class="stat-line"><span class="k">TREASURY</span><span class="v">1.640 FIL</span></div>
+      <div class="stat-line"><span class="k">OPEN TASKS</span><span class="v">3</span></div>
+      <div class="stat-line"><span class="k">LOANS</span><span class="v">2 active</span></div>
+      <div class="stat-line"><span class="k">AUCTIONS</span><span class="v" style="color:var(--amber)">1 pending</span></div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="inspector-card">
+      <div class="oc-title">Target Lock</div>
+      <div class="insp-name" style="color:var(--blue)">ARB-A</div>
+      <div class="insp-meta">
+        <span style="display:flex;align-items:center;gap:4px;color:var(--neon);"><span class="live-beacon" style="width:4px;height:4px;"></span> ACTIVE</span>
+        <span class="insp-type">ARBITRAGEUR</span>
+      </div>
+      <div class="insp-stat-grid">
+        <div class="insp-stat">
+          <div class="is-label">Balance</div>
+          <div class="is-value" style="color:var(--neon)">0.620</div>
+        </div>
+        <div class="insp-stat">
+          <div class="is-label">Earned</div>
+          <div class="is-value" style="color:var(--neon-dim)">1.240</div>
+        </div>
+        <div class="insp-stat">
+          <div class="is-label">Spent</div>
+          <div class="is-value" style="color:var(--red)">0.620</div>
+        </div>
+        <div class="insp-stat">
+          <div class="is-label">Tasks</div>
+          <div class="is-value">8</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="ticker-item"><span class="ticker-dot" style="background:var(--red)"></span><span class="ticker-block">#284739</span><span class="ticker-text">ARB-B -> BANKRUPT</span></div>
+    <div class="ticker-item"><span class="ticker-dot" style="background:var(--neon)"></span><span class="ticker-block">#284738</span><span class="ticker-text">WORKER-A completed task #42</span></div>
+    <div class="ticker-item"><span class="ticker-dot" style="background:var(--blue)"></span><span class="ticker-block">#284736</span><span class="ticker-text">ARB-A lent to SPENDER-A</span></div>
+    <div class="ticker-item"><span class="ticker-dot" style="background:var(--amber)"></span><span class="ticker-block">#284735</span><span class="ticker-text">SPENDER-B -> DISTRESSED</span></div>
+    <div class="ticker-item"><span class="ticker-dot" style="background:var(--neon)"></span><span class="ticker-block">#284733</span><span class="ticker-text">WORKER-C completed task #41</span></div>
+    <div class="ticker-item"><span class="ticker-dot" style="background:var(--red)"></span><span class="ticker-block">#284731</span><span class="ticker-text">Auction opened for ARB-B</span></div>
+  </div>
+</div>
+
+<div style="position:fixed;bottom:32px;left:20px;font-family:var(--mono);font-size:9px;color:var(--text-3);z-index:20;">
+  Inspiration: EVE Online, Escape from Tarkov UI, Wargames (1983)
+</div>
+</body>
+</html>

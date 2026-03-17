@@ -1,0 +1,58 @@
+[
+  {
+    "id": 0,
+    "name": "Worker-A",
+    "type": "WORKER",
+    "initialBalance": "0.3",
+    "wallet": "0xC92c6d13E7664cD4c8361106981a22aB31D95512",
+    "privateKey": "0x6d3045a9fd2e811e68156525c2e9089a85e80e1f124948d26f81199230b05fb2"
+  },
+  {
+    "id": 1,
+    "name": "Worker-B",
+    "type": "WORKER",
+    "initialBalance": "0.3",
+    "wallet": "0xAc6ed6eb979Dd36Bf9aE667E2961184E604Cf9F9",
+    "privateKey": "0x01810a930fba2b997f3dda33d63bd397faeee49e99cabe749e648c7444674238"
+  },
+  {
+    "id": 2,
+    "name": "Worker-C",
+    "type": "WORKER",
+    "initialBalance": "0.3",
+    "wallet": "0x3E32Ec59267430b9d83CF3148f0b84dDC740cB83",
+    "privateKey": "0xce25a3777495351ad89b0a47a31618c45e46ec066757e667d999f34b32623ee3"
+  },
+  {
+    "id": 3,
+    "name": "Spender-A",
+    "type": "SPENDER",
+    "initialBalance": "0.2",
+    "wallet": "0x599C1C5C2f111b728f001a9E72179766aC6fa9a5",
+    "privateKey": "0xb65f02fe0a0d30ff7f3ad150cfdfa3624ad9789be835ecba597986b218fa6b09"
+  },
+  {
+    "id": 4,
+    "name": "Spender-B",
+    "type": "SPENDER",
+    "initialBalance": "0.2",
+    "wallet": "0xD260E270d03F5e867B6C402C0d2d5cb59a2DceAE",
+    "privateKey": "0xadce11f2bb75451005980176bfce989a351a1c3986b643cf51c67feb27a6af55"
+  },
+  {
+    "id": 5,
+    "name": "Arbitrageur-A",
+    "type": "ARBITRAGEUR",
+    "initialBalance": "0.5",
+    "wallet": "0x215290396dcb4ffdc0D53f5944D9c4d1fFEd2957",
+    "privateKey": "0xa3825b6b1661ca18ddc3eca1ce9be5442089a35a69bc7e1b8c4f585e5216a519"
+  },
+  {
+    "id": 6,
+    "name": "Arbitrageur-B",
+    "type": "ARBITRAGEUR",
+    "initialBalance": "0.5",
+    "wallet": "0x205ccb057353440fB024e4baAd250A05b842FbC5",
+    "privateKey": "0xabc1a7eb33afb416812db17655ceb87c958d06d3dc557484c400be56c5ee4e20"
+  }
+]

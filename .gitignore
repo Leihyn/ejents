@@ -1,0 +1,12 @@
+node_modules/
+.env
+artifacts/
+cache/
+typechain-types/
+video/out/
+video/voiceover/
+frontend/dist/
+demo-recording.mov
+frontend/.agents/
+.agents/
+video/public/recording.mp4

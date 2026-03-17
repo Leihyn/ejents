@@ -1,0 +1,18 @@
+{
+  "network": "calibration",
+  "chainId": 314159,
+  "deployer": "0xD9a1048f900E57C0C320eF11eFfAF725d1a9353f",
+  "contracts": {
+    "AgentRegistry": "0x3FAeE9141397D6fa416613703d09f9A4936128B3",
+    "TaskMarket": "0x985CD998F5680572064B41aBb2294C128e56a768",
+    "LendingPool": "0x1Bd98bBc48eB527e518704dD7c40Eb645296C519",
+    "LiquidationQueue": "0xb72Eab53dC8220c31ddA6023e46473F66B6Ef461"
+  },
+  "config": {
+    "storageFee": "0.01",
+    "feeInterval": 5,
+    "distressThreshold": "0.05",
+    "auctionDuration": 20
+  },
+  "deployedAt": "2026-03-16T19:37:02.894Z"
+}

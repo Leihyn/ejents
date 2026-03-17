@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EJENTS — Proposal 2: Observatory</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* DNA-B-T-D-D-S: Bento, Top-nav, Data-dense, Duotone, Sans */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #050510;
+    --surface: #0a0a1e;
+    --elevated: #10102a;
+    --border: rgba(100, 100, 200, 0.08);
+    --border-hover: rgba(100, 100, 200, 0.15);
+    --accent: #6366f1;
+    --accent-glow: rgba(99, 102, 241, 0.12);
+    --cyan: #22d3ee;
+    --emerald: #34d399;
+    --amber: #fbbf24;
+    --rose: #fb7185;
+    --text: #e8e8f0;
+    --text-2: #9898b8;
+    --text-3: #555570;
+    --sans: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ---- Background Atmosphere ---- */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 20%, rgba(99, 102, 241, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(34, 211, 238, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 24px;
+  }
+
+  /* ---- Header ---- */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--accent), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--accent);
+    border: 1px solid var(--accent-glow);
+    background: var(--accent-glow);
+    padding: 2px 8px;
+    border-radius: 99px;
+    letter-spacing: 0.04em;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-2);
+  }
+
+  .live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--emerald);
+    box-shadow: 0 0 8px var(--emerald), 0 0 16px rgba(52, 211, 153, 0.3);
+  }
+
+  /* ---- Bento Grid ---- */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: 12px;
+  }
+
+  /* ---- Card ---- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 200ms ease-out;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+  }
+
+  .card-head {
+    padding: 14px 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+  }
+
+  .card-body {
+    padding: 12px 16px 16px;
+  }
+
+  /* ---- Stat Cards (top row) ---- */
+  .stat-strip {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--stat-accent, var(--accent));
+    opacity: 0.6;
+  }
+
+  .stat-card .label {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-bottom: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .stat-card .value {
+    font-family: var(--mono);
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-card .sub {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 4px;
+    font-family: var(--mono);
+  }
+
+  /* ---- Constellation ---- */
+  .constellation {
+    grid-column: 1 / 9;
+    grid-row: 2 / 4;
+    min-height: 440px;
+  }
+
+  .constellation .card-body {
+    position: relative;
+    height: 400px;
+  }
+
+  /* Simulated nodes with CSS */
+  .c-node {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 200ms ease-out;
+  }
+
+  .c-node:hover {
+    transform: scale(1.08);
+  }
+
+  .c-ring {
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    border: 1.5px solid var(--node-color);
+    background: radial-gradient(circle, var(--node-glow) 0%, transparent 70%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .c-core {
+    width: 30%;
+    height: 30%;
+    border-radius: 50%;
+    background: var(--node-color);
+    opacity: 0.8;
+  }
+
+  .c-label {
+    margin-top: 6px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+
+  .c-bal {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-3);
+  }
+
+  .c-link {
+    position: absolute;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.15;
+    transform-origin: left center;
+    pointer-events: none;
+  }
+
+  /* Legend */
+  .legend {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    gap: 16px;
+    font-size: 10px;
+    color: var(--text-3);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid;
+    background: transparent;
+  }
+
+  /* ---- Agent Inspector ---- */
+  .inspector {
+    grid-column: 9 / -1;
+    grid-row: 2;
+  }
+
+  .inspector-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .inspector-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .type-badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--accent-glow);
+    color: var(--accent);
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-row:last-child { border-bottom: none; }
+  .stat-row .k { color: var(--text-3); }
+  .stat-row .v { font-weight: 500; }
+
+  /* ---- Leaderboard ---- */
+  .leaderboard {
+    grid-column: 9 / -1;
+    grid-row: 3;
+  }
+
+  .lb-row {
+    display: grid;
+    grid-template-columns: 20px 1fr auto auto;
+    gap: 8px;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    transition: background-color 150ms ease-out;
+    margin: 0 -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .lb-row:hover { background: var(--elevated); }
+  .lb-row:last-child { border-bottom: none; }
+
+  .lb-rank { color: var(--text-3); text-align: right; }
+  .lb-name { color: var(--text); font-weight: 500; }
+  .lb-bal { color: var(--cyan); }
+  .lb-status { font-size: 10px; }
+
+  /* ---- Events ---- */
+  .events {
+    grid-column: 1 / -1;
+  }
+
+  .events .card-body {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .event-chip {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--elevated);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+
+  .event-chip .icon {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ---- DNA Badge ---- */
+  .dna-badge {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-3);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="dna-badge">DNA-B-T-D-D-S</div>
+
+<div class="app">
+  <header class="header">
+    <div class="header-left">
+      <span class="logo">EJENTS</span>
+      <span class="badge">CALIBNET</span>
+    </div>
+    <div class="header-right">
+      <span class="live-indicator"><span class="live-dot"></span> Live</span>
+      <span>Block #2,847,391</span>
+    </div>
+  </header>
+
+  <div class="bento">
+    <!-- Stat Strip -->
+    <div class="stat-strip">
+      <div class="stat-card" style="--stat-accent: var(--emerald)">
+        <div class="label">Active Agents</div>
+        <div class="value" style="color:var(--emerald)">4<span style="font-size:14px;color:var(--text-3)"> / 7</span></div>
+        <div class="sub">2 distressed, 1 bankrupt</div>
+      </div>
+      <div class="stat-card" style="--stat-accent: var(--cyan)">
+        <div class="label">Total Economy</div>
+        <div class="value" style="color:var(--cyan)">2.847</div>
+        <div class="sub">FIL across all agents</div>
+      </div>
+      <div class="stat-card" style="--stat-accent: var(--accent)">
+        <div class="label">Treasury</div>
+        <div class="value" style="color:var(--text)">1.640</div>
+        <div class="sub">3 tasks available</div>
+      </div>
+      <div class="stat-card" style="--stat-accent: var(--amber)">
+        <div class="label">Active Loans</div>
+        <div class="value" style="color:var(--amber)">2</div>
+        <div class="sub">1 auction pending</div>
+      </div>
+    </div>
+
+    <!-- Constellation -->
+    <div class="card constellation">
+      <div class="card-head">
+        <span class="card-label">Agent Constellation</span>
+      </div>
+      <div class="card-body">
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="border-color:var(--cyan)"></div> Worker</div>
+          <div class="legend-item"><div class="legend-dot" style="border-color:var(--amber)"></div> Spender</div>
+          <div class="legend-item"><div class="legend-dot" style="border-color:var(--accent)"></div> Arbitrageur</div>
+        </div>
+
+        <!-- Links -->
+        <div class="c-link" style="top:155px;left:250px;width:200px;transform:rotate(10deg);"></div>
+        <div class="c-link" style="top:230px;left:400px;width:150px;transform:rotate(-25deg);"></div>
+
+        <!-- Workers -->
+        <div class="c-node" style="top:60px;left:120px;--node-color:var(--cyan);--node-glow:rgba(34,211,238,0.08);--size:52px;">
+          <div class="c-ring"><div class="c-core"></div></div>
+          <div class="c-label">Worker-A</div>
+          <div class="c-bal">0.42 FIL</div>
+        </div>
+        <div class="c-node" style="top:200px;left:60px;--node-color:var(--cyan);--node-glow:rgba(34,211,238,0.08);--size:46px;">
+          <div class="c-ring"><div class="c-core"></div></div>
+          <div class="c-label">Worker-B</div>
+          <div class="c-bal">0.38 FIL</div>
+        </div>
+        <div class="c-node" style="top:140px;left:300px;--node-color:var(--cyan);--node-glow:rgba(34,211,238,0.08);--size:42px;">
+          <div class="c-ring"><div class="c-core"></div></div>
+          <div class="c-label">Worker-C</div>
+          <div class="c-bal">0.31 FIL</div>
+        </div>
+
+        <!-- Spenders -->
+        <div class="c-node" style="top:50px;left:460px;--node-color:var(--amber);--node-glow:rgba(251,191,36,0.08);--size:36px;">
+          <div class="c-ring"><div class="c-core"></div></div>
+          <div class="c-label">Spender-A</div>
+          <div class="c-bal">0.18 FIL</div>
+        </div>
+        <div class="c-node" style="top:250px;left:200px;--node-color:var(--amber);--node-glow:rgba(251,191,36,0.08);--size:28px;">
+          <div class="c-ring" style="border-style:dashed;"><div class="c-core" style="opacity:0.4;"></div></div>
+          <div class="c-label">Spender-B</div>
+          <div class="c-bal">0.04 FIL</div>
+        </div>
+
+        <!-- Arbitrageurs -->
+        <div class="c-node" style="top:120px;left:550px;--node-color:var(--accent);--node-glow:rgba(99,102,241,0.1);--size:56px;">
+          <div class="c-ring"><div class="c-core"></div></div>
+          <div class="c-label">Arb-A</div>
+          <div class="c-bal">0.62 FIL</div>
+        </div>
+        <div class="c-node" style="top:300px;left:480px;--node-color:var(--rose);--node-glow:rgba(251,113,133,0.06);--size:30px;">
+          <div class="c-ring" style="opacity:0.3;"><div class="c-core" style="opacity:0;"></div></div>
+          <div class="c-label" style="opacity:0.4">Arb-B</div>
+          <div class="c-bal" style="opacity:0.4">BANKRUPT</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inspector -->
+    <div class="card inspector">
+      <div class="card-head"><span class="card-label">Inspector</span></div>
+      <div class="card-body">
+        <div class="inspector-name">Arbitrageur-A</div>
+        <div class="inspector-meta">
+          <span class="live-indicator" style="gap:4px"><span class="live-dot" style="width:5px;height:5px;"></span> <span style="font-size:11px;color:var(--emerald)">Active</span></span>
+          <span class="type-badge">ARBITRAGEUR</span>
+        </div>
+        <div class="stat-row"><span class="k">Balance</span><span class="v" style="color:var(--cyan)">0.6200 FIL</span></div>
+        <div class="stat-row"><span class="k">Earned</span><span class="v" style="color:var(--emerald)">1.2400 FIL</span></div>
+        <div class="stat-row"><span class="k">Spent</span><span class="v" style="color:var(--rose)">0.6200 FIL</span></div>
+        <div class="stat-row"><span class="k">Idle Capital</span><span class="v">50%</span></div>
+        <div class="stat-row"><span class="k">Tasks</span><span class="v">8</span></div>
+        <div class="stat-row"><span class="k">Active Loans</span><span class="v" style="color:var(--accent)">2 (lent)</span></div>
+      </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="card leaderboard">
+      <div class="card-head"><span class="card-label">Leaderboard</span></div>
+      <div class="card-body">
+        <div class="lb-row">
+          <span class="lb-rank">1</span>
+          <span class="lb-name">Arb-A</span>
+          <span class="lb-bal">0.620</span>
+          <span class="lb-status" style="color:var(--emerald)">ACTIVE</span>
+        </div>
+        <div class="lb-row">
+          <span class="lb-rank">2</span>
+          <span class="lb-name">Worker-A</span>
+          <span class="lb-bal">0.420</span>
+          <span class="lb-status" style="color:var(--emerald)">ACTIVE</span>
+        </div>
+        <div class="lb-row">
+          <span class="lb-rank">3</span>
+          <span class="lb-name">Worker-B</span>
+          <span class="lb-bal">0.380</span>
+          <span class="lb-status" style="color:var(--emerald)">ACTIVE</span>
+        </div>
+        <div class="lb-row">
+          <span class="lb-rank">4</span>
+          <span class="lb-name">Worker-C</span>
+          <span class="lb-bal">0.310</span>
+          <span class="lb-status" style="color:var(--emerald)">ACTIVE</span>
+        </div>
+        <div class="lb-row">
+          <span class="lb-rank">5</span>
+          <span class="lb-name">Spender-A</span>
+          <span class="lb-bal">0.180</span>
+          <span class="lb-status" style="color:var(--amber)">DISTR</span>
+        </div>
+        <div class="lb-row">
+          <span class="lb-rank">6</span>
+          <span class="lb-name">Spender-B</span>
+          <span class="lb-bal">0.040</span>
+          <span class="lb-status" style="color:var(--amber)">DISTR</span>
+        </div>
+        <div class="lb-row">
+          <span class="lb-rank">7</span>
+          <span class="lb-name">Arb-B</span>
+          <span class="lb-bal">0.000</span>
+          <span class="lb-status" style="color:var(--rose)">BNKRPT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Events (horizontal scroll) -->
+    <div class="card events">
+      <div class="card-head"><span class="card-label">Live Events</span></div>
+      <div class="card-body">
+        <div class="event-chip"><span class="icon" style="background:var(--rose)"></span>#284739 Arb-B -> BANKRUPT</div>
+        <div class="event-chip"><span class="icon" style="background:var(--cyan)"></span>#284738 Worker-A completed task #42</div>
+        <div class="event-chip"><span class="icon" style="background:var(--accent)"></span>#284736 Arb-A lent to Spender-A</div>
+        <div class="event-chip"><span class="icon" style="background:var(--amber)"></span>#284735 Spender-B -> DISTRESSED</div>
+        <div class="event-chip"><span class="icon" style="background:var(--cyan)"></span>#284733 Worker-C completed task #41</div>
+        <div class="event-chip"><span class="icon" style="background:var(--rose)"></span>#284731 Auction opened for Arb-B</div>
+        <div class="event-chip"><span class="icon" style="background:var(--cyan)"></span>#284730 Worker-B completed task #40</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="position:fixed;bottom:8px;left:16px;font-family:var(--mono);font-size:9px;color:var(--text-3);">
+  Inspiration: Linear, Stripe Dashboard, Vercel Analytics
+</div>
+</body>
+</html>

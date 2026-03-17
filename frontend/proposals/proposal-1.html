@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EJENTS — Proposal 1: Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* DNA-G-N-T-M-M: Grid, Minimal-nav, Terminal-hero, Monochrome, Mono */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: #1a1a1a;
+    --border-bright: #2a2a2a;
+    --green: #00ff88;
+    --green-dim: #00cc6a;
+    --green-muted: #007744;
+    --amber: #ffaa00;
+    --red: #ff4444;
+    --text: #cccccc;
+    --text-dim: #666666;
+    --text-muted: #444444;
+    --mono: 'JetBrains Mono', monospace;
+    --radius: 2px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    padding: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- Header: looks like a terminal prompt ---- */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 12px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo {
+    color: var(--green);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+  }
+
+  .prompt {
+    color: var(--text-dim);
+  }
+
+  .prompt .cursor {
+    display: inline-block;
+    width: 7px;
+    height: 14px;
+    background: var(--green);
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+    margin-left: 2px;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--text-dim);
+  }
+
+  .status-live {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+  }
+
+  /* ---- Grid Layout ---- */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto 1fr;
+    gap: 12px;
+    height: calc(100vh - 80px);
+  }
+
+  /* ---- Panel ---- */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .panel-title {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .panel-title::before {
+    content: '>';
+    color: var(--green-muted);
+  }
+
+  .panel-body {
+    padding: 12px;
+  }
+
+  /* ---- Stats Bar (top row, full width) ---- */
+  .stats-bar {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+  }
+
+  .stat-label {
+    color: var(--text-muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .stat-value.green { color: var(--green); }
+  .stat-value.amber { color: var(--amber); }
+  .stat-value.red { color: var(--red); }
+  .stat-value.white { color: #ffffff; }
+
+  /* ---- Constellation (ASCII art style) ---- */
+  .constellation {
+    grid-column: 1 / 3;
+    grid-row: 2 / 4;
+    position: relative;
+  }
+
+  .constellation .panel-body {
+    height: calc(100% - 33px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .node {
+    position: absolute;
+    text-align: center;
+    cursor: pointer;
+    transition: opacity 150ms ease-out;
+  }
+
+  .node:hover { opacity: 0.8; }
+
+  .node-symbol {
+    font-size: 24px;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .node-name {
+    font-size: 9px;
+    color: var(--text-dim);
+  }
+
+  .node-bal {
+    font-size: 9px;
+    color: var(--text-muted);
+  }
+
+  .node.worker .node-symbol { color: var(--green); }
+  .node.spender .node-symbol { color: var(--amber); }
+  .node.arb .node-symbol { color: #8888ff; }
+  .node.distressed .node-symbol { color: var(--amber); }
+  .node.bankrupt .node-symbol { color: var(--red); opacity: 0.4; }
+
+  .link-line {
+    position: absolute;
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--border-bright) 0, var(--border-bright) 4px, transparent 4px, transparent 8px);
+    transform-origin: left center;
+    pointer-events: none;
+  }
+
+  /* ---- Agent List (right column) ---- */
+  .agent-list {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  .agent-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background-color 150ms ease-out;
+  }
+
+  .agent-row:hover {
+    background: #1a1a1a;
+  }
+
+  .agent-row:last-child { border-bottom: none; }
+
+  .agent-rank {
+    color: var(--text-muted);
+    width: 16px;
+    text-align: right;
+  }
+
+  .agent-type-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .agent-name { color: var(--text); flex: 1; }
+  .agent-balance { color: var(--green-dim); text-align: right; }
+  .agent-status { text-align: right; width: 50px; font-size: 10px; }
+
+  /* ---- Event Log ---- */
+  .event-log {
+    grid-column: 3;
+    grid-row: 3;
+  }
+
+  .event-log .panel-body {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .event-row {
+    display: flex;
+    gap: 8px;
+    padding: 3px 0;
+    color: var(--text-dim);
+  }
+
+  .event-block { color: var(--text-muted); width: 56px; flex-shrink: 0; }
+  .event-type { width: 8px; flex-shrink: 0; text-align: center; }
+  .event-text { flex: 1; }
+
+  /* ---- Legend ---- */
+  .legend {
+    display: flex;
+    gap: 12px;
+    padding: 8px 12px;
+    border-top: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ---- DNA Badge ---- */
+  .dna-badge {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    font-size: 9px;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: var(--radius);
+    background: var(--bg);
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="dna-badge">DNA-G-N-T-M-M</div>
+
+<header class="header">
+  <div class="header-left">
+    <span class="logo">EJENTS</span>
+    <span class="prompt">calibnet:~$ observe<span class="cursor"></span></span>
+  </div>
+  <div class="header-right">
+    <span class="status-live"><span class="dot"></span> live</span>
+    <span>block #2,847,391</span>
+  </div>
+</header>
+
+<!-- Stats Bar -->
+<div class="grid">
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-label">agents</div>
+      <div class="stat-value white">7</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">active</div>
+      <div class="stat-value green">4</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">distressed</div>
+      <div class="stat-value amber">2</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">bankrupt</div>
+      <div class="stat-value red">1</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">total fil</div>
+      <div class="stat-value green">2.847</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">treasury</div>
+      <div class="stat-value white">1.640</div>
+    </div>
+  </div>
+
+  <!-- Constellation -->
+  <div class="panel constellation">
+    <div class="panel-title">constellation</div>
+    <div class="panel-body">
+      <!-- ASCII-style nodes positioned absolutely -->
+      <div class="link-line" style="top:140px;left:180px;width:160px;transform:rotate(15deg);"></div>
+      <div class="link-line" style="top:200px;left:340px;width:120px;transform:rotate(-20deg);"></div>
+      <div class="link-line" style="top:260px;left:200px;width:200px;transform:rotate(5deg);"></div>
+
+      <div class="node worker" style="top:80px;left:120px;">
+        <div class="node-symbol">[ ]</div>
+        <div class="node-name">Worker-A</div>
+        <div class="node-bal">0.42 FIL</div>
+      </div>
+      <div class="node worker" style="top:180px;left:60px;">
+        <div class="node-symbol">[ ]</div>
+        <div class="node-name">Worker-B</div>
+        <div class="node-bal">0.38 FIL</div>
+      </div>
+      <div class="node worker" style="top:140px;left:280px;">
+        <div class="node-symbol">[ ]</div>
+        <div class="node-name">Worker-C</div>
+        <div class="node-bal">0.31 FIL</div>
+      </div>
+      <div class="node spender" style="top:60px;left:380px;">
+        <div class="node-symbol">( )</div>
+        <div class="node-name">Spender-A</div>
+        <div class="node-bal">0.18 FIL</div>
+      </div>
+      <div class="node spender distressed" style="top:240px;left:160px;">
+        <div class="node-symbol">(!)</div>
+        <div class="node-name">Spender-B</div>
+        <div class="node-bal">0.04 FIL</div>
+      </div>
+      <div class="node arb" style="top:100px;left:500px;">
+        <div class="node-symbol">&lt; &gt;</div>
+        <div class="node-name">Arb-A</div>
+        <div class="node-bal">0.62 FIL</div>
+      </div>
+      <div class="node arb bankrupt" style="top:280px;left:420px;">
+        <div class="node-symbol">&lt;X&gt;</div>
+        <div class="node-name">Arb-B</div>
+        <div class="node-bal">0.00 FIL</div>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><span style="color:var(--green)">[ ]</span> worker</div>
+      <div class="legend-item"><span style="color:var(--amber)">( )</span> spender</div>
+      <div class="legend-item"><span style="color:#8888ff">&lt; &gt;</span> arbitrageur</div>
+      <div class="legend-item"><span style="color:var(--text-muted)">---</span> loan</div>
+    </div>
+  </div>
+
+  <!-- Agent List -->
+  <div class="panel agent-list">
+    <div class="panel-title">agents</div>
+    <div class="agent-row">
+      <span class="agent-rank">1</span>
+      <span class="agent-type-dot" style="background:var(--green)"></span>
+      <span class="agent-name">Arb-A</span>
+      <span class="agent-balance">0.620</span>
+      <span class="agent-status" style="color:var(--green)">ACTIVE</span>
+    </div>
+    <div class="agent-row">
+      <span class="agent-rank">2</span>
+      <span class="agent-type-dot" style="background:var(--green)"></span>
+      <span class="agent-name">Worker-A</span>
+      <span class="agent-balance">0.420</span>
+      <span class="agent-status" style="color:var(--green)">ACTIVE</span>
+    </div>
+    <div class="agent-row">
+      <span class="agent-rank">3</span>
+      <span class="agent-type-dot" style="background:var(--green)"></span>
+      <span class="agent-name">Worker-B</span>
+      <span class="agent-balance">0.380</span>
+      <span class="agent-status" style="color:var(--green)">ACTIVE</span>
+    </div>
+    <div class="agent-row">
+      <span class="agent-rank">4</span>
+      <span class="agent-type-dot" style="background:var(--green)"></span>
+      <span class="agent-name">Worker-C</span>
+      <span class="agent-balance">0.310</span>
+      <span class="agent-status" style="color:var(--green)">ACTIVE</span>
+    </div>
+    <div class="agent-row">
+      <span class="agent-rank">5</span>
+      <span class="agent-type-dot" style="background:var(--amber)"></span>
+      <span class="agent-name">Spender-A</span>
+      <span class="agent-balance">0.180</span>
+      <span class="agent-status" style="color:var(--amber)">DISTR</span>
+    </div>
+    <div class="agent-row">
+      <span class="agent-rank">6</span>
+      <span class="agent-type-dot" style="background:var(--amber)"></span>
+      <span class="agent-name">Spender-B</span>
+      <span class="agent-balance">0.040</span>
+      <span class="agent-status" style="color:var(--amber)">DISTR</span>
+    </div>
+    <div class="agent-row">
+      <span class="agent-rank">7</span>
+      <span class="agent-type-dot" style="background:#8888ff"></span>
+      <span class="agent-name">Arb-B</span>
+      <span class="agent-balance">0.000</span>
+      <span class="agent-status" style="color:var(--red)">BNKRPT</span>
+    </div>
+  </div>
+
+  <!-- Event Log -->
+  <div class="panel event-log">
+    <div class="panel-title">events</div>
+    <div class="panel-body">
+      <div class="event-row">
+        <span class="event-block">#284739</span>
+        <span class="event-type" style="color:var(--red)">!</span>
+        <span class="event-text">Arb-B -> BANKRUPT</span>
+      </div>
+      <div class="event-row">
+        <span class="event-block">#284738</span>
+        <span class="event-type" style="color:var(--green)">+</span>
+        <span class="event-text">Worker-A completed task #42</span>
+      </div>
+      <div class="event-row">
+        <span class="event-block">#284736</span>
+        <span class="event-type" style="color:#8888ff">~</span>
+        <span class="event-text">Arb-A lent to Spender-A</span>
+      </div>
+      <div class="event-row">
+        <span class="event-block">#284735</span>
+        <span class="event-type" style="color:var(--amber)">!</span>
+        <span class="event-text">Spender-B -> DISTRESSED</span>
+      </div>
+      <div class="event-row">
+        <span class="event-block">#284733</span>
+        <span class="event-type" style="color:var(--green)">+</span>
+        <span class="event-text">Worker-C completed task #41</span>
+      </div>
+      <div class="event-row">
+        <span class="event-block">#284731</span>
+        <span class="event-type" style="color:var(--red)">*</span>
+        <span class="event-text">Auction opened for Arb-B</span>
+      </div>
+      <div class="event-row">
+        <span class="event-block">#284730</span>
+        <span class="event-type" style="color:var(--green)">+</span>
+        <span class="event-text">Worker-B completed task #40</span>
+      </div>
+      <div class="event-row">
+        <span class="event-block">#284728</span>
+        <span class="event-type" style="color:#8888ff">~</span>
+        <span class="event-text">Arb-A lent to Spender-B</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Inspiration: Bloomberg Terminal + htop + Vercel's monospace aesthetic -->
+<div style="position:fixed;bottom:8px;left:16px;font-size:9px;color:var(--text-muted);">
+  Inspiration: Bloomberg Terminal, htop, Vercel monospace
+</div>
+</body>
+</html>

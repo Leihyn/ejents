@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>EJENTS — Design Proposals</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#06060c;color:#eeeef4;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding:40px;min-height:100vh}
+h1{font-size:28px;font-weight:700;letter-spacing:-.03em;margin-bottom:4px}
+.sub{color:#9898b8;font-size:14px;margin-bottom:32px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+a.card{background:#0c0c18;border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow:hidden;transition:border-color 200ms ease-out,transform 200ms ease-out;text-decoration:none;color:inherit;display:block}
+a.card:hover{border-color:rgba(124,109,245,0.3);transform:translateY(-2px)}
+.preview{aspect-ratio:16/10;overflow:hidden}
+.preview iframe{width:200%;height:200%;transform:scale(0.5);transform-origin:top left;border:none;pointer-events:none}
+.info{padding:14px}
+.dna{font-family:'JetBrains Mono',monospace;font-size:10px;color:#7c6df5;margin-bottom:4px;letter-spacing:.04em}
+.name{font-size:15px;font-weight:600;margin-bottom:3px}
+.desc{font-size:11px;color:#9898b8;line-height:1.5;margin-bottom:8px}
+.tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag{font-family:'JetBrains Mono',monospace;font-size:8px;padding:2px 6px;border-radius:99px;background:rgba(255,255,255,0.04);color:#5a5a78;border:1px solid rgba(255,255,255,0.06)}
+</style>
+</head>
+<body>
+<h1>EJENTS Design Proposals</h1>
+<p class="sub">7 directions. Open each to see full mockup.</p>
+<div class="grid">
+<a href="proposal-1.html" class="card"><div class="preview"><iframe src="proposal-1.html" loading="lazy"></iframe></div><div class="info"><div class="dna">DNA-G-N-T-M-M</div><div class="name">1. Terminal</div><div class="desc">Green-on-black, ASCII node symbols, Bloomberg/htop feel. All monospace.</div><div class="tags"><span class="tag">JetBrains Mono</span><span class="tag">Monochrome</span><span class="tag">htop</span></div></div></a>
+<a href="proposal-2.html" class="card"><div class="preview"><iframe src="proposal-2.html" loading="lazy"></iframe></div><div class="info"><div class="dna">DNA-B-T-D-D-S</div><div class="name">2. Observatory</div><div class="desc">Bento grid, radial glow nodes, horizontal event chips. Duotone indigo-cyan.</div><div class="tags"><span class="tag">Inter</span><span class="tag">Bento</span><span class="tag">Linear/Stripe</span></div></div></a>
+<a href="proposal-3.html" class="card"><div class="preview"><iframe src="proposal-3.html" loading="lazy"></iframe></div><div class="info"><div class="dna">DNA-A-L-I-V-G</div><div class="name">3. Control Room</div><div class="desc">Left-rail sidebar, diamond nodes, vibrant multi-color. Figma/Raycast inspired.</div><div class="tags"><span class="tag">Space Grotesk</span><span class="tag">Sidebar</span><span class="tag">Vibrant</span></div></div></a>
+<a href="proposal-4.html" class="card"><div class="preview"><iframe src="proposal-4.html" loading="lazy"></iframe></div><div class="info"><div class="dna">DNA-F-H-I-N-D</div><div class="name">4. Warfare</div><div class="desc">Full-bleed HUD overlay, hex nodes, grid background, scanline. EVE Online meets Wargames.</div><div class="tags"><span class="tag">Chakra Petch</span><span class="tag">Neon</span><span class="tag">HUD</span></div></div></a>
+<a href="proposal-5.html" class="card"><div class="preview"><iframe src="proposal-5.html" loading="lazy"></iframe></div><div class="info"><div class="dna">DNA-C-T-E-M-E</div><div class="name">5. Newspaper</div><div class="desc">Three-column editorial, serif masthead, gold accent. Financial Times meets dark mode.</div><div class="tags"><span class="tag">Playfair Display</span><span class="tag">Serif</span><span class="tag">Editorial</span></div></div></a>
+<a href="proposal-6.html" class="card"><div class="preview"><iframe src="proposal-6.html" loading="lazy"></iframe></div><div class="info"><div class="dna">DNA-B-T-S-L-S</div><div class="name">6. Minimal Light</div><div class="desc">Clean white background, subtle shadows, Notion/Linear light aesthetic. The anti-crypto look.</div><div class="tags"><span class="tag">DM Sans</span><span class="tag">Light mode</span><span class="tag">Notion</span></div></div></a>
+<a href="proposal-7.html" class="card"><div class="preview"><iframe src="proposal-7.html" loading="lazy"></iframe></div><div class="info"><div class="dna">DNA-S-N-R-M-M</div><div class="name">7. Brutalist</div><div class="desc">Hard borders, square nodes, split-screen, raw monospace. Craigslist meets Swiss.</div><div class="tags"><span class="tag">Space Mono</span><span class="tag">Brutalist</span><span class="tag">Raw</span></div></div></a>
+</div>
+</body>
+</html>

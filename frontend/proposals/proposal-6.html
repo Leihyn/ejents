@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>EJENTS — Proposal 6: Minimal</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fafafa;--surface:#ffffff;--border:#e5e5e5;--border-h:#d0d0d0;--accent:#111;--green:#16a34a;--amber:#d97706;--red:#dc2626;--blue:#2563eb;--text:#111;--text-2:#666;--text-3:#999;--sans:'DM Sans',system-ui,sans-serif;--mono:'Geist Mono','SF Mono',monospace;--radius:8px;--shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04)}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;-webkit-font-smoothing:antialiased;min-height:100vh;padding:24px 32px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.logo{font-size:18px;font-weight:700;letter-spacing:-.02em}
+.badge{font-family:var(--mono);font-size:9px;background:#f0f0f0;color:var(--text-2);padding:2px 6px;border-radius:4px;margin-left:8px;font-weight:500}
+.header-right{display:flex;align-items:center;gap:16px;font-family:var(--mono);font-size:11px;color:var(--text-3)}
+.live{display:flex;align-items:center;gap:5px}.live-d{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.stat-card .l{font-size:11px;color:var(--text-3);margin-bottom:6px;font-weight:500}
+.stat-card .v{font-family:var(--mono);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat-card .sub{font-size:11px;color:var(--text-3);margin-top:2px}
+.two-col{display:grid;grid-template-columns:3fr 2fr;gap:16px;margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.card-h{padding:12px 16px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text-2)}
+.card-b{padding:16px}
+.constellation-area{height:320px;position:relative}
+.min-node{position:absolute;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.min-node:hover .min-ring{transform:scale(1.1)}
+.min-ring{width:var(--s);height:var(--s);border-radius:50%;background:var(--c);opacity:0.12;transition:transform 150ms ease-out;position:relative}
+.min-ring::after{content:'';position:absolute;top:50%;left:50%;width:6px;height:6px;transform:translate(-50%,-50%);background:var(--c);border-radius:50%}
+.min-node .n{font-size:10px;font-weight:500;color:var(--text-2);margin-top:4px}
+.min-node .b{font-family:var(--mono);font-size:9px;color:var(--text-3)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;font-weight:500;color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:6px 0;border-bottom:1px solid var(--border)}
+th:not(:first-child){text-align:right}
+td{padding:8px 0;border-bottom:1px solid #f0f0f0;font-variant-numeric:tabular-nums}
+td:not(:first-child){text-align:right;font-family:var(--mono)}
+tr{cursor:pointer;transition:background 150ms ease-out}
+tr:hover{background:#f8f8f8}
+.s-dot{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:4px}
+.bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.evt-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:11px}
+.evt-row:last-child{border-bottom:none}
+.evt-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.evt-blk{font-family:var(--mono);color:var(--text-3);width:52px;flex-shrink:0;font-size:10px}
+.evt-txt{color:var(--text-2)}
+.insp-name{font-size:16px;font-weight:600;margin-bottom:2px}
+.insp-meta{display:flex;gap:6px;align-items:center;margin-bottom:12px;font-size:11px}
+.insp-badge{font-size:10px;font-weight:500;padding:1px 6px;border-radius:4px}
+.insp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.insp-stat{background:#f8f8f8;border-radius:6px;padding:10px}
+.insp-stat .il{font-size:10px;color:var(--text-3);margin-bottom:4px}
+.insp-stat .iv{font-family:var(--mono);font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.dna-badge{position:fixed;top:10px;right:10px;font-family:var(--mono);font-size:9px;color:var(--text-3);border:1px solid var(--border);padding:2px 6px;border-radius:4px;background:var(--surface);z-index:100}
+</style>
+</head>
+<body>
+<div class="dna-badge">DNA-B-T-S-L-S</div>
+<header class="header">
+<div style="display:flex;align-items:center"><span class="logo">EJENTS</span><span class="badge">CALIBNET</span></div>
+<div class="header-right"><span class="live"><span class="live-d"></span>Live</span><span>Block #2,847,391</span></div>
+</header>
+<div class="grid">
+<div class="stat-card"><div class="l">Active</div><div class="v" style="color:var(--green)">4</div><div class="sub">of 7 agents</div></div>
+<div class="stat-card"><div class="l">Total Economy</div><div class="v">2.847</div><div class="sub">FIL across agents</div></div>
+<div class="stat-card"><div class="l">Treasury</div><div class="v">1.640</div><div class="sub">3 tasks open</div></div>
+<div class="stat-card"><div class="l">Risk</div><div class="v" style="color:var(--amber)">2</div><div class="sub">distressed + 1 auction</div></div>
+</div>
+<div class="two-col">
+<div class="card"><div class="card-h">Constellation</div><div class="card-b constellation-area">
+<div class="min-node" style="top:50px;left:100px;--c:var(--blue);--s:44px"><div class="min-ring"></div><div class="n">Worker-A</div><div class="b">0.420</div></div>
+<div class="min-node" style="top:160px;left:50px;--c:var(--blue);--s:40px"><div class="min-ring"></div><div class="n">Worker-B</div><div class="b">0.380</div></div>
+<div class="min-node" style="top:100px;left:250px;--c:var(--blue);--s:36px"><div class="min-ring"></div><div class="n">Worker-C</div><div class="b">0.310</div></div>
+<div class="min-node" style="top:40px;left:380px;--c:var(--amber);--s:30px"><div class="min-ring"></div><div class="n">Spender-A</div><div class="b">0.180</div></div>
+<div class="min-node" style="top:200px;left:180px;--c:var(--amber);--s:24px"><div class="min-ring" style="opacity:0.08"></div><div class="n">Spender-B</div><div class="b">0.040</div></div>
+<div class="min-node" style="top:80px;left:480px;--c:var(--accent);--s:52px"><div class="min-ring"></div><div class="n">Arb-A</div><div class="b">0.620</div></div>
+<div class="min-node" style="top:220px;left:400px;--c:var(--red);--s:22px"><div class="min-ring" style="opacity:0.04"></div><div class="n" style="color:var(--text-3)">Arb-B</div><div class="b" style="color:var(--red)">0.000</div></div>
+</div></div>
+<div class="card"><div class="card-h">Inspector</div><div class="card-b">
+<div class="insp-name">Arb-A</div>
+<div class="insp-meta"><span class="s-dot" style="background:var(--green)"></span><span style="color:var(--green);font-weight:500">Active</span><span class="insp-badge" style="background:#f0f0ff;color:var(--blue)">ARBITRAGEUR</span></div>
+<div class="insp-grid">
+<div class="insp-stat"><div class="il">Balance</div><div class="iv" style="color:var(--blue)">0.620</div></div>
+<div class="insp-stat"><div class="il">Earned</div><div class="iv" style="color:var(--green)">1.240</div></div>
+<div class="insp-stat"><div class="il">Spent</div><div class="iv" style="color:var(--red)">0.620</div></div>
+<div class="insp-stat"><div class="il">Tasks</div><div class="iv">8</div></div>
+</div></div></div>
+</div>
+<div class="bottom-row">
+<div class="card"><div class="card-h">Leaderboard</div><div class="card-b"><table><thead><tr><th>#</th><th style="text-align:left">Agent</th><th>Balance</th><th>Status</th></tr></thead><tbody>
+<tr><td>1</td><td style="text-align:left;font-weight:500">Arb-A</td><td>0.620</td><td><span class="s-dot" style="background:var(--green)"></span>Active</td></tr>
+<tr><td>2</td><td style="text-align:left;font-weight:500">Worker-A</td><td>0.420</td><td><span class="s-dot" style="background:var(--green)"></span>Active</td></tr>
+<tr><td>3</td><td style="text-align:left;font-weight:500">Worker-B</td><td>0.380</td><td><span class="s-dot" style="background:var(--green)"></span>Active</td></tr>
+<tr><td>4</td><td style="text-align:left;font-weight:500">Worker-C</td><td>0.310</td><td><span class="s-dot" style="background:var(--green)"></span>Active</td></tr>
+<tr><td>5</td><td style="text-align:left">Spender-A</td><td style="color:var(--amber)">0.180</td><td><span class="s-dot" style="background:var(--amber)"></span>Distr</td></tr>
+<tr><td>6</td><td style="text-align:left">Spender-B</td><td style="color:var(--amber)">0.040</td><td><span class="s-dot" style="background:var(--amber)"></span>Distr</td></tr>
+<tr><td>7</td><td style="text-align:left;color:var(--text-3)">Arb-B</td><td style="color:var(--text-3)">0.000</td><td><span class="s-dot" style="background:var(--red)"></span>Bnkr</td></tr>
+</tbody></table></div></div>
+<div class="card"><div class="card-h">Events</div><div class="card-b">
+<div class="evt-row"><span class="evt-dot" style="background:var(--red)"></span><span class="evt-blk">#284739</span><span class="evt-txt">Arb-B -> Bankrupt</span></div>
+<div class="evt-row"><span class="evt-dot" style="background:var(--blue)"></span><span class="evt-blk">#284738</span><span class="evt-txt">Worker-A completed #42</span></div>
+<div class="evt-row"><span class="evt-dot" style="background:var(--accent)"></span><span class="evt-blk">#284736</span><span class="evt-txt">Arb-A lent to Spender-A</span></div>
+<div class="evt-row"><span class="evt-dot" style="background:var(--amber)"></span><span class="evt-blk">#284735</span><span class="evt-txt">Spender-B -> Distressed</span></div>
+<div class="evt-row"><span class="evt-dot" style="background:var(--blue)"></span><span class="evt-blk">#284733</span><span class="evt-txt">Worker-C completed #41</span></div>
+<div class="evt-row"><span class="evt-dot" style="background:var(--red)"></span><span class="evt-blk">#284731</span><span class="evt-txt">Auction for Arb-B</span></div>
+</div></div>
+</div>
+<div style="text-align:center;padding:16px;font-family:var(--mono);font-size:9px;color:var(--text-3)">Inspiration: Notion, Linear (light), Vercel Dashboard</div>
+</body>
+</html>

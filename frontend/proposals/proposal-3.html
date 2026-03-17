@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EJENTS — Proposal 3: Control Room</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* DNA-A-L-I-V-G: Asymmetric, Left-rail, Immersive, Vibrant, Geometric */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #020208;
+    --surface: #08081a;
+    --elevated: #0e0e28;
+    --border: rgba(120, 80, 255, 0.06);
+    --border-active: rgba(120, 80, 255, 0.2);
+    --violet: #8b5cf6;
+    --violet-glow: rgba(139, 92, 246, 0.15);
+    --cyan: #06b6d4;
+    --lime: #84cc16;
+    --orange: #f97316;
+    --pink: #ec4899;
+    --text: #f0f0f8;
+    --text-2: #8888aa;
+    --text-3: #44445e;
+    --display: 'Space Grotesk', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --radius: 8px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* ---- Left Rail ---- */
+  .rail {
+    width: 260px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: var(--surface);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+  }
+
+  .rail-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text);
+  }
+
+  .logo-accent {
+    color: var(--violet);
+  }
+
+  .network-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--violet);
+    border: 1px solid var(--violet-glow);
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(139, 92, 246, 0.06);
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+
+  .rail-status {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rail-status-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+  }
+
+  .rail-status-row .label { color: var(--text-3); }
+  .rail-status-row .val { color: var(--text-2); font-weight: 500; }
+
+  /* ---- Nav items (agent list in rail) ---- */
+  .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    margin-bottom: 4px;
+  }
+
+  .agent-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .agent-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background-color 150ms ease-out;
+    border: 1px solid transparent;
+  }
+
+  .agent-nav-item:hover {
+    background: var(--elevated);
+  }
+
+  .agent-nav-item.active {
+    background: var(--elevated);
+    border-color: var(--border-active);
+  }
+
+  .agent-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .agent-nav-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .agent-nav-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .agent-nav-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-3);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .agent-nav-bal {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-2);
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .status-pip {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ---- Main Content ---- */
+  .main {
+    flex: 1;
+    padding: 20px 24px;
+    overflow-y: auto;
+    height: 100vh;
+  }
+
+  .main-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .main-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .main-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .live-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(132, 204, 22, 0.08);
+    border: 1px solid rgba(132, 204, 22, 0.15);
+    padding: 3px 10px;
+    border-radius: 99px;
+    color: var(--lime);
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  .live-pill-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--lime);
+    box-shadow: 0 0 6px var(--lime);
+  }
+
+  /* ---- Immersive Constellation Area ---- */
+  .constellation-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    height: 380px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  /* Gradient orbs in background */
+  .constellation-area::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .constellation-area::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .c-legend {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: flex;
+    gap: 14px;
+    font-size: 10px;
+    color: var(--text-3);
+    font-weight: 500;
+    z-index: 2;
+  }
+
+  .c-legend span { display: flex; align-items: center; gap: 5px; }
+
+  .c-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    transform: rotate(45deg);
+  }
+
+  /* Nodes — diamond shaped for this proposal */
+  .node-diamond {
+    position: absolute;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+    transition: transform 200ms ease-out;
+  }
+
+  .node-diamond:hover { transform: scale(1.1); }
+
+  .diamond-shape {
+    width: var(--size);
+    height: var(--size);
+    transform: rotate(45deg);
+    border: 1.5px solid var(--node-color);
+    background: linear-gradient(135deg, var(--node-glow) 0%, transparent 100%);
+    border-radius: 3px;
+    position: relative;
+  }
+
+  .diamond-shape .inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30%;
+    height: 30%;
+    transform: translate(-50%, -50%);
+    background: var(--node-color);
+    border-radius: 1px;
+    opacity: 0.7;
+  }
+
+  .node-diamond .n-label {
+    margin-top: 8px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+
+  .node-diamond .n-bal {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-3);
+  }
+
+  .conn-line {
+    position: absolute;
+    height: 1px;
+    transform-origin: left center;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .conn-line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--violet) 0%, transparent 100%);
+    opacity: 0.2;
+  }
+
+  /* ---- Bottom Grid: Events + Detail ---- */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .panel-head {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-3);
+  }
+
+  .panel-content {
+    padding: 12px 16px;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  /* Events */
+  .evt {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .evt-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .evt-block {
+    color: var(--text-3);
+    width: 56px;
+    flex-shrink: 0;
+  }
+
+  .evt-text { color: var(--text-2); }
+
+  /* Detail Panel */
+  .detail-card {
+    padding: 16px;
+  }
+
+  .detail-name {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 2px;
+  }
+
+  .detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 11px;
+  }
+
+  .detail-type {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .detail-stat {
+    background: var(--elevated);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+
+  .detail-stat .ds-label {
+    font-size: 10px;
+    color: var(--text-3);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+
+  .detail-stat .ds-value {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- DNA Badge ---- */
+  .dna-badge {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-3);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--surface);
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="dna-badge">DNA-A-L-I-V-G</div>
+
+<!-- Left Rail -->
+<nav class="rail">
+  <div class="rail-header">
+    <span class="logo">E<span class="logo-accent">J</span>ENTS</span>
+    <span class="network-badge">CALIBNET</span>
+  </div>
+
+  <div class="rail-status">
+    <div class="rail-status-row"><span class="label">Block</span><span class="val">#2,847,391</span></div>
+    <div class="rail-status-row"><span class="label">Economy</span><span class="val" style="color:var(--cyan)">2.847 FIL</span></div>
+    <div class="rail-status-row"><span class="label">Treasury</span><span class="val">1.640 FIL</span></div>
+    <div class="rail-status-row"><span class="label">Tasks</span><span class="val">3 open</span></div>
+    <div class="rail-status-row"><span class="label">Loans</span><span class="val">2 active</span></div>
+    <div class="rail-status-row"><span class="label">Auctions</span><span class="val" style="color:var(--orange)">1 pending</span></div>
+  </div>
+
+  <div>
+    <div class="nav-label">Agents</div>
+    <div class="agent-nav">
+      <div class="agent-nav-item active">
+        <div class="agent-icon" style="background:rgba(139,92,246,0.12);color:var(--violet);">AR</div>
+        <div class="agent-nav-info">
+          <div class="agent-nav-name">Arb-A</div>
+          <div class="agent-nav-sub"><span class="status-pip" style="background:var(--lime);box-shadow:0 0 4px var(--lime)"></span>Active</div>
+        </div>
+        <div class="agent-nav-bal">0.620</div>
+      </div>
+      <div class="agent-nav-item">
+        <div class="agent-icon" style="background:rgba(6,182,212,0.1);color:var(--cyan);">WK</div>
+        <div class="agent-nav-info">
+          <div class="agent-nav-name">Worker-A</div>
+          <div class="agent-nav-sub"><span class="status-pip" style="background:var(--lime);box-shadow:0 0 4px var(--lime)"></span>Active</div>
+        </div>
+        <div class="agent-nav-bal">0.420</div>
+      </div>
+      <div class="agent-nav-item">
+        <div class="agent-icon" style="background:rgba(6,182,212,0.1);color:var(--cyan);">WK</div>
+        <div class="agent-nav-info">
+          <div class="agent-nav-name">Worker-B</div>
+          <div class="agent-nav-sub"><span class="status-pip" style="background:var(--lime);box-shadow:0 0 4px var(--lime)"></span>Active</div>
+        </div>
+        <div class="agent-nav-bal">0.380</div>
+      </div>
+      <div class="agent-nav-item">
+        <div class="agent-icon" style="background:rgba(6,182,212,0.1);color:var(--cyan);">WK</div>
+        <div class="agent-nav-info">
+          <div class="agent-nav-name">Worker-C</div>
+          <div class="agent-nav-sub"><span class="status-pip" style="background:var(--lime);box-shadow:0 0 4px var(--lime)"></span>Active</div>
+        </div>
+        <div class="agent-nav-bal">0.310</div>
+      </div>
+      <div class="agent-nav-item">
+        <div class="agent-icon" style="background:rgba(249,115,22,0.1);color:var(--orange);">SP</div>
+        <div class="agent-nav-info">
+          <div class="agent-nav-name">Spender-A</div>
+          <div class="agent-nav-sub"><span class="status-pip" style="background:var(--orange)"></span>Distressed</div>
+        </div>
+        <div class="agent-nav-bal">0.180</div>
+      </div>
+      <div class="agent-nav-item">
+        <div class="agent-icon" style="background:rgba(249,115,22,0.1);color:var(--orange);">SP</div>
+        <div class="agent-nav-info">
+          <div class="agent-nav-name">Spender-B</div>
+          <div class="agent-nav-sub"><span class="status-pip" style="background:var(--orange)"></span>Distressed</div>
+        </div>
+        <div class="agent-nav-bal">0.040</div>
+      </div>
+      <div class="agent-nav-item">
+        <div class="agent-icon" style="background:rgba(236,72,153,0.08);color:var(--pink);">AR</div>
+        <div class="agent-nav-info">
+          <div class="agent-nav-name">Arb-B</div>
+          <div class="agent-nav-sub"><span class="status-pip" style="background:var(--pink)"></span>Bankrupt</div>
+        </div>
+        <div class="agent-nav-bal" style="color:var(--text-3)">0.000</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main">
+  <div class="main-header">
+    <h1 class="main-title">Constellation</h1>
+    <div class="main-meta">
+      <span class="live-pill"><span class="live-pill-dot"></span> Live</span>
+      <span>Block #2,847,391</span>
+    </div>
+  </div>
+
+  <!-- Constellation -->
+  <div class="constellation-area">
+    <div class="c-legend">
+      <span><span class="c-legend-dot" style="background:var(--cyan)"></span> Worker</span>
+      <span><span class="c-legend-dot" style="background:var(--orange)"></span> Spender</span>
+      <span><span class="c-legend-dot" style="background:var(--violet)"></span> Arbitrageur</span>
+    </div>
+
+    <div class="conn-line" style="top:150px;left:200px;width:240px;transform:rotate(8deg);"></div>
+    <div class="conn-line" style="top:220px;left:380px;width:180px;transform:rotate(-22deg);"></div>
+
+    <div class="node-diamond" style="top:60px;left:140px;--node-color:var(--cyan);--node-glow:rgba(6,182,212,0.06);--size:36px;">
+      <div class="diamond-shape"><div class="inner"></div></div>
+      <div class="n-label">Worker-A</div>
+      <div class="n-bal">0.42 FIL</div>
+    </div>
+    <div class="node-diamond" style="top:180px;left:80px;--node-color:var(--cyan);--node-glow:rgba(6,182,212,0.06);--size:32px;">
+      <div class="diamond-shape"><div class="inner"></div></div>
+      <div class="n-label">Worker-B</div>
+      <div class="n-bal">0.38 FIL</div>
+    </div>
+    <div class="node-diamond" style="top:120px;left:320px;--node-color:var(--cyan);--node-glow:rgba(6,182,212,0.06);--size:30px;">
+      <div class="diamond-shape"><div class="inner"></div></div>
+      <div class="n-label">Worker-C</div>
+      <div class="n-bal">0.31 FIL</div>
+    </div>
+    <div class="node-diamond" style="top:40px;left:480px;--node-color:var(--orange);--node-glow:rgba(249,115,22,0.06);--size:26px;">
+      <div class="diamond-shape"><div class="inner"></div></div>
+      <div class="n-label">Spender-A</div>
+      <div class="n-bal">0.18 FIL</div>
+    </div>
+    <div class="node-diamond" style="top:240px;left:220px;--node-color:var(--orange);--node-glow:rgba(249,115,22,0.06);--size:22px;">
+      <div class="diamond-shape" style="border-style:dashed;"><div class="inner" style="opacity:0.3"></div></div>
+      <div class="n-label">Spender-B</div>
+      <div class="n-bal">0.04 FIL</div>
+    </div>
+    <div class="node-diamond" style="top:100px;left:600px;--node-color:var(--violet);--node-glow:rgba(139,92,246,0.08);--size:40px;">
+      <div class="diamond-shape"><div class="inner"></div></div>
+      <div class="n-label">Arb-A</div>
+      <div class="n-bal">0.62 FIL</div>
+    </div>
+    <div class="node-diamond" style="top:260px;left:520px;--node-color:var(--pink);--node-glow:rgba(236,72,153,0.04);--size:24px;">
+      <div class="diamond-shape" style="opacity:0.25;"><div class="inner" style="opacity:0"></div></div>
+      <div class="n-label" style="opacity:0.35">Arb-B</div>
+      <div class="n-bal" style="opacity:0.35">BANKRUPT</div>
+    </div>
+  </div>
+
+  <!-- Bottom: Events + Detail -->
+  <div class="bottom-grid">
+    <div class="panel">
+      <div class="panel-head">Live Events</div>
+      <div class="panel-content">
+        <div class="evt">
+          <div class="evt-icon" style="background:rgba(236,72,153,0.1);color:var(--pink);">!</div>
+          <span class="evt-block">#284739</span>
+          <span class="evt-text">Arb-B -> BANKRUPT</span>
+        </div>
+        <div class="evt">
+          <div class="evt-icon" style="background:rgba(6,182,212,0.1);color:var(--cyan);">+</div>
+          <span class="evt-block">#284738</span>
+          <span class="evt-text">Worker-A completed task #42</span>
+        </div>
+        <div class="evt">
+          <div class="evt-icon" style="background:rgba(139,92,246,0.1);color:var(--violet);">~</div>
+          <span class="evt-block">#284736</span>
+          <span class="evt-text">Arb-A lent to Spender-A</span>
+        </div>
+        <div class="evt">
+          <div class="evt-icon" style="background:rgba(249,115,22,0.1);color:var(--orange);">!</div>
+          <span class="evt-block">#284735</span>
+          <span class="evt-text">Spender-B -> DISTRESSED</span>
+        </div>
+        <div class="evt">
+          <div class="evt-icon" style="background:rgba(6,182,212,0.1);color:var(--cyan);">+</div>
+          <span class="evt-block">#284733</span>
+          <span class="evt-text">Worker-C completed task #41</span>
+        </div>
+        <div class="evt">
+          <div class="evt-icon" style="background:rgba(236,72,153,0.1);color:var(--pink);">*</div>
+          <span class="evt-block">#284731</span>
+          <span class="evt-text">Auction opened for Arb-B</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">Agent Detail</div>
+      <div class="detail-card">
+        <div class="detail-name">Arbitrageur-A</div>
+        <div class="detail-meta">
+          <span style="display:flex;align-items:center;gap:4px;color:var(--lime);font-size:11px;">
+            <span class="status-pip" style="background:var(--lime);box-shadow:0 0 4px var(--lime)"></span> Active
+          </span>
+          <span class="detail-type" style="background:rgba(139,92,246,0.12);color:var(--violet);">ARBITRAGEUR</span>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-stat">
+            <div class="ds-label">Balance</div>
+            <div class="ds-value" style="color:var(--cyan)">0.620</div>
+          </div>
+          <div class="detail-stat">
+            <div class="ds-label">Earned</div>
+            <div class="ds-value" style="color:var(--lime)">1.240</div>
+          </div>
+          <div class="detail-stat">
+            <div class="ds-label">Spent</div>
+            <div class="ds-value" style="color:var(--pink)">0.620</div>
+          </div>
+          <div class="detail-stat">
+            <div class="ds-label">Tasks</div>
+            <div class="ds-value">8</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div style="position:fixed;bottom:8px;right:16px;font-family:var(--mono);font-size:9px;color:var(--text-3);">
+  Inspiration: Figma sidebar, Raycast, Apple Music spatial
+</div>
+</body>
+</html>

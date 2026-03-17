@@ -1,0 +1,31 @@
+{
+  "name": "ejents",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run scripts/deploy.js --network calibration",
+    "seed": "npx hardhat run scripts/seed.js --network calibration",
+    "agents": "node agents/index.js",
+    "keeper": "node agents/keeper.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.28.6"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
+    "dotenv": "^17.3.1",
+    "ethers": "^6.16.0",
+    "groq-sdk": "^1.1.1"
+  }
+}

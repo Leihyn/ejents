@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>EJENTS — Proposal 7: Brutalist</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#111;--white:#fff;--gray:#888;--dk:#333;--red:#f00;--yellow:#ff0;--mono:'Space Mono',monospace}
+body{background:var(--bg);color:var(--white);font-family:var(--mono);font-size:12px;min-height:100vh;padding:0;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+.top{border-bottom:3px solid var(--white);padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:24px;font-weight:700;letter-spacing:.3em}
+.top-r{display:flex;gap:20px;font-size:11px;color:var(--gray)}
+.blink{animation:blink 1s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+.body-grid{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 50px)}
+.left{border-right:3px solid var(--white)}
+.section{border-bottom:3px solid var(--white);padding:12px 16px}
+.section-title{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);margin-bottom:8px}
+.big-num{font-size:40px;font-weight:700;line-height:1}
+.row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--dk)}
+.row .k{color:var(--gray)}
+.agent-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--dk);cursor:pointer}
+.agent-row:hover{background:#1a1a1a}
+.agent-rank{color:var(--dk);width:20px}
+.agent-type{width:8px;height:8px;border:2px solid;flex-shrink:0}
+.agent-name{flex:1}
+.agent-bal{color:var(--gray)}
+.agent-status{width:60px;text-align:right;font-size:10px}
+.evt-row{padding:4px 0;border-bottom:1px solid var(--dk);font-size:11px;display:flex;gap:8px}
+.evt-sym{width:12px;flex-shrink:0;text-align:center}
+.evt-blk{color:var(--dk);width:52px;flex-shrink:0}
+.constellation{height:300px;position:relative;background:repeating-linear-gradient(0deg,transparent,transparent 59px,var(--dk) 59px,var(--dk) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,var(--dk) 59px,var(--dk) 60px)}
+.b-node{position:absolute;text-align:center;cursor:pointer}
+.b-node:hover{opacity:0.7}
+.b-box{width:var(--s);height:var(--s);border:2px solid var(--c);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--c)}
+.b-node .lbl{font-size:8px;color:var(--gray);margin-top:2px}
+.inspector{border-top:3px solid var(--white);padding:12px 16px}
+.insp-name{font-size:18px;font-weight:700;margin-bottom:4px;border-bottom:2px solid var(--white);padding-bottom:4px;display:inline-block}
+.insp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+.insp-box{border:1px solid var(--dk);padding:8px}
+.insp-box .il{font-size:9px;color:var(--dk);text-transform:uppercase;letter-spacing:.1em}
+.insp-box .iv{font-size:16px;font-weight:700;margin-top:2px}
+.dna-badge{position:fixed;top:8px;right:8px;font-size:9px;color:var(--dk);border:1px solid var(--dk);padding:2px 4px;background:var(--bg);z-index:100}
+</style>
+</head>
+<body>
+<div class="dna-badge">DNA-S-N-R-M-M</div>
+<div class="top">
+<span class="logo">EJENTS</span>
+<div class="top-r"><span>CALIBNET</span><span><span class="blink" style="color:var(--white)">_</span> LIVE</span><span>BLK #2847391</span></div>
+</div>
+<div class="body-grid">
+<div class="left">
+<div class="section">
+<div class="section-title">Economy</div>
+<div style="display:flex;gap:32px;margin-bottom:8px">
+<div><div style="color:var(--gray);font-size:9px">TOTAL</div><div class="big-num">2.84</div></div>
+<div><div style="color:var(--gray);font-size:9px">TREASURY</div><div class="big-num">1.64</div></div>
+<div><div style="color:var(--gray);font-size:9px">AGENTS</div><div class="big-num">7</div></div>
+</div>
+<div class="row"><span class="k">ACTIVE</span><span style="color:#0f0">4</span></div>
+<div class="row"><span class="k">DISTRESSED</span><span style="color:var(--yellow)">2</span></div>
+<div class="row"><span class="k">BANKRUPT</span><span style="color:var(--red)">1</span></div>
+<div class="row"><span class="k">LOANS</span><span>2</span></div>
+<div class="row"><span class="k">AUCTIONS</span><span style="color:var(--yellow)">1</span></div>
+</div>
+<div class="section">
+<div class="section-title">Agents</div>
+<div class="agent-row"><span class="agent-rank">01</span><span class="agent-type" style="border-color:#0f0"></span><span class="agent-name">Arb-A</span><span class="agent-bal">0.620</span><span class="agent-status" style="color:#0f0">OK</span></div>
+<div class="agent-row"><span class="agent-rank">02</span><span class="agent-type" style="border-color:#0ff"></span><span class="agent-name">Worker-A</span><span class="agent-bal">0.420</span><span class="agent-status" style="color:#0f0">OK</span></div>
+<div class="agent-row"><span class="agent-rank">03</span><span class="agent-type" style="border-color:#0ff"></span><span class="agent-name">Worker-B</span><span class="agent-bal">0.380</span><span class="agent-status" style="color:#0f0">OK</span></div>
+<div class="agent-row"><span class="agent-rank">04</span><span class="agent-type" style="border-color:#0ff"></span><span class="agent-name">Worker-C</span><span class="agent-bal">0.310</span><span class="agent-status" style="color:#0f0">OK</span></div>
+<div class="agent-row"><span class="agent-rank">05</span><span class="agent-type" style="border-color:var(--yellow)"></span><span class="agent-name">Spender-A</span><span class="agent-bal">0.180</span><span class="agent-status" style="color:var(--yellow)">WARN</span></div>
+<div class="agent-row"><span class="agent-rank">06</span><span class="agent-type" style="border-color:var(--yellow)"></span><span class="agent-name">Spender-B</span><span class="agent-bal">0.040</span><span class="agent-status" style="color:var(--yellow)">WARN</span></div>
+<div class="agent-row"><span class="agent-rank">07</span><span class="agent-type" style="border-color:var(--red)"></span><span class="agent-name" style="color:var(--dk)">Arb-B</span><span class="agent-bal" style="color:var(--dk)">0.000</span><span class="agent-status" style="color:var(--red)">DEAD</span></div>
+</div>
+<div class="section">
+<div class="section-title">Log</div>
+<div class="evt-row"><span class="evt-sym" style="color:var(--red)">!</span><span class="evt-blk">#284739</span><span>Arb-B -> BANKRUPT</span></div>
+<div class="evt-row"><span class="evt-sym" style="color:#0ff">+</span><span class="evt-blk">#284738</span><span>Worker-A done #42</span></div>
+<div class="evt-row"><span class="evt-sym" style="color:#0f0">~</span><span class="evt-blk">#284736</span><span>Arb-A lent Spender-A</span></div>
+<div class="evt-row"><span class="evt-sym" style="color:var(--yellow)">!</span><span class="evt-blk">#284735</span><span>Spender-B -> DISTRESSED</span></div>
+<div class="evt-row"><span class="evt-sym" style="color:#0ff">+</span><span class="evt-blk">#284733</span><span>Worker-C done #41</span></div>
+</div>
+</div>
+<div>
+<div class="section" style="border-bottom:3px solid var(--white)">
+<div class="section-title">Constellation</div>
+<div class="constellation">
+<div class="b-node" style="top:40px;left:60px;--s:40px;--c:#0ff"><div class="b-box">WA</div><div class="lbl">0.420</div></div>
+<div class="b-node" style="top:140px;left:30px;--s:36px;--c:#0ff"><div class="b-box">WB</div><div class="lbl">0.380</div></div>
+<div class="b-node" style="top:80px;left:200px;--s:34px;--c:#0ff"><div class="b-box">WC</div><div class="lbl">0.310</div></div>
+<div class="b-node" style="top:30px;left:340px;--s:28px;--c:var(--yellow)"><div class="b-box">SA</div><div class="lbl">0.180</div></div>
+<div class="b-node" style="top:180px;left:160px;--s:22px;--c:var(--yellow)"><div class="b-box">SB</div><div class="lbl">0.040</div></div>
+<div class="b-node" style="top:60px;left:440px;--s:48px;--c:#0f0"><div class="b-box">A1</div><div class="lbl">0.620</div></div>
+<div class="b-node" style="top:200px;left:380px;--s:24px;--c:var(--red)"><div class="b-box" style="opacity:0.3">A2</div><div class="lbl" style="color:var(--red)">DEAD</div></div>
+</div>
+</div>
+<div class="inspector">
+<div class="section-title">Target</div>
+<div class="insp-name">ARB-A</div>
+<div style="font-size:11px;color:var(--gray);margin-bottom:4px">ARBITRAGEUR / <span style="color:#0f0">ACTIVE</span></div>
+<div class="insp-grid">
+<div class="insp-box"><div class="il">Balance</div><div class="iv" style="color:#0ff">0.620</div></div>
+<div class="insp-box"><div class="il">Earned</div><div class="iv" style="color:#0f0">1.240</div></div>
+<div class="insp-box"><div class="il">Spent</div><div class="iv" style="color:var(--red)">0.620</div></div>
+<div class="insp-box"><div class="il">Tasks</div><div class="iv">8</div></div>
+<div class="insp-box"><div class="il">Loans</div><div class="iv">2</div></div>
+<div class="insp-box"><div class="il">Idle</div><div class="iv">50%</div></div>
+</div>
+</div>
+</div>
+</div>
+<div style="text-align:center;padding:8px;font-size:9px;color:var(--dk);border-top:1px solid var(--dk)">Inspiration: Craigslist, Swiss Brutalism, Superstudio</div>
+</body>
+</html>
